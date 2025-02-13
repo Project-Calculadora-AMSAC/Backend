@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Aggregates;
 
 namespace ProjectCalculadoraAMSAC.User.Domain.Model.Aggregates;
 
@@ -18,6 +19,7 @@ public class AuthUser(string email, string passwordHash,string name,string phone
     
     public DateTime RegisteredAt { get; set; } = registeredAt; // Fecha de registro
 
+    
     public AuthUser updateEmail(string email)
     {
         Email = email;
@@ -30,7 +32,7 @@ public class AuthUser(string email, string passwordHash,string name,string phone
         return this;
     }
     
-    
+    public List<Estimacion> Estimaciones { get; set; }
 
     
 }

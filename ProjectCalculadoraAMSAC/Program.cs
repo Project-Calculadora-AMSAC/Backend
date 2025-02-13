@@ -46,6 +46,7 @@ builder.Services.AddAuthentication(options =>
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
         };
     });
+
 // Configurar DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -56,14 +57,16 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 builder.Services.AddControllers(options =>
-    {
+{
         options.Conventions.Add(new KebabCaseRouteNamingConvention());
-    });
+});
+
 // Configurar opciones de enrutamiento
 builder.Services.AddRouting(options =>
 {
     options.LowercaseUrls = true;
 });
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(corsPolicyBuilder =>
@@ -76,6 +79,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
@@ -137,6 +141,7 @@ var app = builder.Build();
 
 // Log Server Addresses
 var serverAddresses = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>();
+
 foreach (var address in serverAddresses.Addresses)
 {
     Console.WriteLine($"Listening on {address}");

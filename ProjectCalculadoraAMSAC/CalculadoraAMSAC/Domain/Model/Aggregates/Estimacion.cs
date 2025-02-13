@@ -1,11 +1,13 @@
 ﻿using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Entities;
+using ProjectCalculadoraAMSAC.User.Domain.Model.Aggregates;
 
 namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Aggregates;
 
 public class Estimacion
 {
     public int EstimacionId { get; private set; }
-    public int UsuarioId { get; private set; }
+    public Guid UsuarioId { get; private set; }
+    public AuthUser AuthUser { get; private set; }
     public int ProyectoId { get; private set; }
     public Proyecto Proyecto { get; private set; }
 
@@ -22,7 +24,7 @@ public class Estimacion
 
     private Estimacion() { }
 
-    public Estimacion(int usuarioId, int proyectoId, int tipoPamId, string codPam, Dictionary<string, object> valores)
+    public Estimacion(Guid usuarioId, int proyectoId, int tipoPamId, string codPam, Dictionary<string, object> valores)
     {
         UsuarioId = usuarioId;
         ProyectoId = proyectoId;

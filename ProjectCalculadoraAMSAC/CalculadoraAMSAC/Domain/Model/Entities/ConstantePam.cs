@@ -1,32 +1,21 @@
 ﻿namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Entities;
 
-public class ConstantesPam
+public class VariablesPam
 {
     public int Id { get; private set; }
-    public decimal FactorCorreccionVolumen { get; private set; }
-    public decimal FactorCorreccionArea { get; private set; }
-    public decimal CorreccionCapacidad { get; private set; }
-    public decimal CorreccionCobertura { get; private set; }
-    public decimal CorreccionCoberturaTipoIII { get; private set; }
-    public decimal CorreccionCoberturaTipoIV { get; private set; }
-    public decimal CorreccionCoberturaNinguna { get; private set; }
-    public decimal CorreccionTransporte { get; private set; }
-    public decimal CorreccionGlobal { get; private set; }
+    public int TipoPamId { get; private set; }
+    public TipoPam TipoPam { get; private set; }
     
-    private ConstantesPam() { }
+    public string Nombre { get; private set; }
+    public decimal Valor { get; private set; }
+    
+    
+    private VariablesPam() { }
 
-    public ConstantesPam(decimal factorVolumen, decimal factorArea, decimal correccionCapacidad,
-        decimal correccionCobertura, decimal correccionCoberturaTipoIII, decimal correccionCoberturaTipoIV,
-        decimal correccionCoberturaNinguna, decimal correccionTransporte, decimal correccionGlobal)
+    public VariablesPam(int tipoPamId, string nombre, decimal valor)
     {
-        FactorCorreccionVolumen = factorVolumen;
-        FactorCorreccionArea = factorArea;
-        CorreccionCapacidad = correccionCapacidad;
-        CorreccionCobertura = correccionCobertura;
-        CorreccionCoberturaTipoIII = correccionCoberturaTipoIII;
-        CorreccionCoberturaTipoIV = correccionCoberturaTipoIV;
-        CorreccionCoberturaNinguna = correccionCoberturaNinguna;
-        CorreccionTransporte = correccionTransporte;
-        CorreccionGlobal = correccionGlobal;
+        TipoPamId = tipoPamId;
+        Nombre = nombre ?? throw new ArgumentNullException(nameof(nombre));
+        Valor = valor;
     }
 }
