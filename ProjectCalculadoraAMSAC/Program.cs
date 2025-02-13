@@ -1,15 +1,156 @@
-using ProjectCalculadoraAMSAC;
+using System.Text;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using ProjectCalculadoraAMSAC.Shared.Domain.Repositories;
+using ProjectCalculadoraAMSAC.Shared.Infraestructure.Interfaces.ASP.Configuration;
+using ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Configuration;
+using ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Repositories;
+using ProjectCalculadoraAMSAC.User.Application.Internal.CommandServices;
+using ProjectCalculadoraAMSAC.User.Application.Internal.OutboundServices;
+using ProjectCalculadoraAMSAC.User.Application.Internal.QueryServices;
+using ProjectCalculadoraAMSAC.User.Domain.Repositories;
+using ProjectCalculadoraAMSAC.User.Domain.Services;
+using ProjectCalculadoraAMSAC.User.Infraestructure.Hashing.BCrypt.Services;
+using ProjectCalculadoraAMSAC.User.Infraestructure.Persistence.EFC.Repositories;
+using ProjectCalculadoraAMSAC.User.Infraestructure.Tokens.JWT.Configurations;
+using ProjectCalculadoraAMSAC.User.Infraestructure.Tokens.JWT.Services;
+using ProjectCalculadoraAMSAC.User.Interfaces.ACL;
+using ProjectCalculadoraAMSAC.User.Interfaces.ACL.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// Configurar autenticación JWT
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = "Bearer";
+        options.DefaultChallengeScheme = "Bearer";
+    })
+    .AddJwtBearer("Bearer", options =>
+    {
+        var secret = builder.Configuration["TokenSettings:Secret"];
+        if (string.IsNullOrEmpty(secret))
+        {
+            throw new ArgumentNullException(nameof(secret), "JWT Secret is not configured in appsettings.json.");
+        }
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
+        };
+    });
+// Configurar DbContext
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+        .LogTo(Console.WriteLine, LogLevel.Information)
+        .EnableSensitiveDataLogging(builder.Environment.IsDevelopment())
+        .EnableDetailedErrors(builder.Environment.IsDevelopment());
+});
+
+builder.Services.AddControllers(options =>
+    {
+        options.Conventions.Add(new KebabCaseRouteNamingConvention());
+    });
+// Configurar opciones de enrutamiento
+builder.Services.AddRouting(options =>
+{
+    options.LowercaseUrls = true;
+});
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(corsPolicyBuilder =>
+    {
+        corsPolicyBuilder.WithOrigins("http://localhost:8081") 
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "CalculadoraAMSAC API",
+        Version = "v1",
+        Description = "AMSAC Platform API",
+        TermsOfService = new Uri("http://localhost:5000/swagger/index.html"),
+        Contact = new OpenApiContact
+        {
+            Name = "Bruno&Erick",
+            Email = "erickpalomino0723@gmail.com"
+        },
+        License = new OpenApiLicense
+        {
+            Name = "Apache 2.0",
+            Url = new Uri("https://www.apache.org/licenses/LICENSE-2.0.html")
+        }
+    });
+
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter JWT token with Bearer prefix",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Id = "Bearer",
+                    Type = ReferenceType.SecurityScheme
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("TokenSettings"));
+builder.Services.AddScoped<IAuthUserRepository, AuthUserRepository>();
+builder.Services.AddScoped<IAuthUserCommandService, AuthUserCommandService>();
+builder.Services.AddScoped<IAuthUserQueryService, AuthUserQueryService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IHashingService, HashingService>();
+builder.Services.AddScoped<IIamContextFacade, IamContextFacade>();
+
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Log Server Addresses
+var serverAddresses = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>();
+foreach (var address in serverAddresses.Addresses)
+{
+    Console.WriteLine($"Listening on {address}");
+}
+
+// Ensure Database is Created
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<AppDbContext>();
+    context.Database.EnsureCreated();
+}
+
+// Configure Middleware Pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -18,32 +159,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
-
+app.UseCors();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
 app.Run();
-
-namespace ProjectCalculadoraAMSAC
-{
-    record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-    {
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-    }
-}
