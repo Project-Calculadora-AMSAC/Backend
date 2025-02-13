@@ -33,6 +33,16 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="CalculadoraAMSAC\Application\Internal\CommandServices\" />
+      <Folder Include="CalculadoraAMSAC\Application\Internal\QueryServices\" />
+      <Folder Include="CalculadoraAMSAC\Domain\Model\Commands\" />
+      <Folder Include="CalculadoraAMSAC\Domain\Model\Queries\" />
+      <Folder Include="CalculadoraAMSAC\Domain\Repositories\" />
+      <Folder Include="CalculadoraAMSAC\Domain\Services\" />
+      <Folder Include="CalculadoraAMSAC\Infrastructure\Persistence\EFC\Repositories\" />
+      <Folder Include="CalculadoraAMSAC\Interfaces\Controllers\" />
+      <Folder Include="CalculadoraAMSAC\Interfaces\Resources\" />
+      <Folder Include="CalculadoraAMSAC\Interfaces\Transform\" />
       <Folder Include="User\" />
     </ItemGroup>
 

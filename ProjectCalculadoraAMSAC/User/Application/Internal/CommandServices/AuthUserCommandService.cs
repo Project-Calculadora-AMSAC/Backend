@@ -49,7 +49,7 @@ public class AuthUserCommandService(
             throw new Exception($"Email {command.Email} is already taken");
 
         var hashedPassword = hashingService.HashPassword(command.Password);
-        var user = new AuthUser(command.Email, hashedPassword,command.Name,command.PhoneNumber,command.DateCreatedAt);
+        var user = new AuthUser(command.Email, hashedPassword,command.Name,command.RegisterArea,command.DateCreatedAt);
         try
         {
             await userRepository.AddAsync(user);
