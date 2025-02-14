@@ -10,7 +10,6 @@ public class Estimacion
     public AuthUser AuthUser { get; private set; }
     public int ProyectoId { get; private set; }
     public Proyecto Proyecto { get; private set; }
-
     public int TipoPamId { get; private set; }
     public TipoPam TipoPam { get; private set; }
 
@@ -18,13 +17,13 @@ public class Estimacion
     public DateTime FechaEstimacion { get; private set; }
 
     // ✅ Relación con `AtributoEstimacion`
-    private readonly List<AtributoEstimacion> _atributos = new();
-    public IReadOnlyCollection<AtributoEstimacion> Atributos => _atributos.AsReadOnly();
+    private readonly List<ValorAtributoEstimacion> _valores = new();
+    public IReadOnlyCollection<ValorAtributoEstimacion> Valores => _valores.AsReadOnly();
 
 
     private Estimacion() { }
 
-    public Estimacion(Guid usuarioId, int proyectoId, int tipoPamId, string codPam, Dictionary<string, object> valores)
+    public Estimacion(Guid usuarioId, int proyectoId, int tipoPamId, string codPam, Dictionary<int, string> valores)
     {
         UsuarioId = usuarioId;
         ProyectoId = proyectoId;
@@ -33,18 +32,22 @@ public class Estimacion
         FechaEstimacion = DateTime.UtcNow;
 
         // ✅ Guardar los valores dinámicos en `AtributoEstimacion`
-        foreach (var (key, value) in valores)
+        foreach (var (atributoPamId, valor) in valores)
         {
-            _atributos.Add(new AtributoEstimacion(EstimacionId, key, value?.ToString() ?? string.Empty));
+            _valores.Add(new ValorAtributoEstimacion(EstimacionId, atributoPamId, valor));
         }
     }
 
-    public T ObtenerAtributo<T>(string nombre)
+    public void AsignarValor(int atributoPamId, string valor)
     {
-        var atributo = _atributos.FirstOrDefault(a => a.Name == nombre);
-        if (atributo == null)
-            throw new KeyNotFoundException($"El atributo '{nombre}' no existe.");
-
-        return atributo.ObtenerValor<T>();
+        var valorExistente = _valores.FirstOrDefault(v => v.AtributoPamId == atributoPamId);
+        if (valorExistente != null)
+        {
+            valorExistente.ActualizarValor(valor);
+        }
+        else
+        {
+            throw new KeyNotFoundException($"El atributo con ID {atributoPamId} no existe en esta estimación.");
+        }
     }
 }

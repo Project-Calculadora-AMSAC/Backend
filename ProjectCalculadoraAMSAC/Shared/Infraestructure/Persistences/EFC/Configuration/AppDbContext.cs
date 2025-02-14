@@ -24,11 +24,12 @@ namespace ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Config
         }
         
         public DbSet<AuthUser> AuthUsers { get; set; }
-        public DbSet<Proyecto> Proyectos { get; set; }
-        public DbSet<TipoPam> TiposPam { get; set; }
+        public DbSet<Proyecto> Proyecto { get; set; }
+        public DbSet<TipoPam> TipoPam { get; set; }
         public DbSet<Estimacion> Estimaciones { get; set; }
-        public DbSet<AtributoEstimacion> AtributosEstimacion { get; set; }
-        public DbSet<VariablesPam> VariablesPams { get; set; }
+        public DbSet<AtributosPam> AtributoPam { get; set; }
+        public DbSet<VariablesPam> VariablePam { get; set; }
+        public DbSet<ValorAtributoEstimacion> ValoresAtributosEstimacion { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -67,14 +68,46 @@ namespace ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Config
             {
                 tipoPam.HasKey(tp => tp.Id);
                 tipoPam.Property(tp => tp.Name).IsRequired().HasMaxLength(255);
-                tipoPam.Property(tp => tp.Status).HasDefaultValue(true);
+                tipoPam.Property(tp => tp.Status).IsRequired().HasDefaultValue(true);
+                
                 tipoPam.HasMany(tp => tp.Estimaciones)
                     .WithOne(e => e.TipoPam)
                     .HasForeignKey(e => e.TipoPamId)
                     .OnDelete(DeleteBehavior.Restrict);
+                
+                tipoPam.HasMany(tp => tp.Atributos)
+                    .WithOne(e => e.TipoPam)
+                    .HasForeignKey(e => e.TipoPamId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                
                 tipoPam.HasMany(tp => tp.Variables)
                     .WithOne(c => c.TipoPam)
                     .HasForeignKey(c => c.TipoPamId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+            
+            // Configuracion AtributosPam 
+            builder.Entity<AtributosPam>(atributoPam =>
+            {
+                atributoPam.HasKey(a => a.AtributoPamId);
+                atributoPam.Property(a => a.Nombre).IsRequired().HasMaxLength(255);
+                atributoPam.Property(a => a.TipoDato).IsRequired();
+            });
+            
+            // Configuracion ValorAtributoEstimacion
+            builder.Entity<ValorAtributoEstimacion>(valor =>
+            {
+                valor.HasKey(v => v.Id);
+                valor.Property(v => v.Valor).IsRequired();
+
+                valor.HasOne(v => v.Estimacion)
+                    .WithMany(e => e.Valores)
+                    .HasForeignKey(v => v.EstimacionId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                valor.HasOne(v => v.AtributoPam)
+                    .WithMany()
+                    .HasForeignKey(v => v.AtributoPamId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
             
@@ -89,25 +122,46 @@ namespace ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Config
                     .IsUnique()
                     .HasDatabaseName("IX_Estimacion_CodPam");
 
-                estimacion.HasMany(e => e.Atributos)
-                    .WithOne(a => a.Estimacion)
-                    .HasForeignKey(a => a.EstimacionId)
+              
+                estimacion.HasOne(e => e.Proyecto)
+                    .WithMany(p => p.Estimaciones)
+                    .HasForeignKey(e => e.ProyectoId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                estimacion.HasOne(e => e.TipoPam)
+                    .WithMany(t => t.Estimaciones)
+                    .HasForeignKey(e => e.TipoPamId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                estimacion.HasMany(e => e.Valores)
+                    .WithOne(v => v.Estimacion)
+                    .HasForeignKey(v => v.EstimacionId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
             
             // Configuración de la entidad `AtributoEstimacion`
-            builder.Entity<AtributoEstimacion>(atributo =>
+            builder.Entity<ValorAtributoEstimacion>(valor =>
             {
-                atributo.HasKey(a => a.AtributoEstimacionId);
-                atributo.Property(a => a.Name).IsRequired().HasMaxLength(100);
-                atributo.Property(a => a.Valor).IsRequired();
+                valor.HasKey(v => v.Id);
+                valor.Property(v => v.Valor).IsRequired();
+
+                valor.HasOne(v => v.Estimacion)
+                    .WithMany(e => e.Valores)
+                    .HasForeignKey(v => v.EstimacionId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                valor.HasOne(v => v.AtributoPam)
+                    .WithMany()
+                    .HasForeignKey(v => v.AtributoPamId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
             
             // Configuración de la entidad `VariablesPAM`
-            builder.Entity<VariablesPam>(variables =>
+            builder.Entity<VariablesPam>(variable =>
             {
-                variables.HasKey(c => c.Id);
-                variables.Property(c => c.TipoPamId).IsRequired();
+                variable.HasKey(v => v.Id);
+                variable.Property(v => v.Nombre).IsRequired().HasMaxLength(255);
+                variable.Property(v => v.Valor).IsRequired();
             });
         }
             
