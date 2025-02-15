@@ -30,6 +30,8 @@ namespace ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Config
         public DbSet<AtributosPam> AtributoPam { get; set; }
         public DbSet<VariablesPam> VariablePam { get; set; }
         public DbSet<ValorAtributoEstimacion> ValoresAtributosEstimacion { get; set; }
+        public DbSet<UnidadDeMedida> UnidadesDeMedida { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -92,25 +94,13 @@ namespace ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Config
                 atributoPam.HasKey(a => a.AtributoPamId);
                 atributoPam.Property(a => a.Nombre).IsRequired().HasMaxLength(255);
                 atributoPam.Property(a => a.TipoDato).IsRequired();
-            });
-            
-            // Configuracion ValorAtributoEstimacion
-            builder.Entity<ValorAtributoEstimacion>(valor =>
-            {
-                valor.HasKey(v => v.Id);
-                valor.Property(v => v.Valor).IsRequired();
-
-                valor.HasOne(v => v.Estimacion)
-                    .WithMany(e => e.Valores)
-                    .HasForeignKey(v => v.EstimacionId)
-                    .OnDelete(DeleteBehavior.Cascade);
-
-                valor.HasOne(v => v.AtributoPam)
+                
+                atributoPam.HasOne(a => a.UnidadDeMedida)
                     .WithMany()
-                    .HasForeignKey(v => v.AtributoPamId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .HasForeignKey(a => a.UnidadDeMedidaId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
-            
+
             // Configuración de la entidad `Estimacion`
             builder.Entity<Estimacion>(estimacion =>
             {
@@ -162,6 +152,13 @@ namespace ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Config
                 variable.HasKey(v => v.Id);
                 variable.Property(v => v.Nombre).IsRequired().HasMaxLength(255);
                 variable.Property(v => v.Valor).IsRequired();
+            });
+            
+            builder.Entity<UnidadDeMedida>(unidad =>
+            {
+                unidad.HasKey(u => u.Id);
+                unidad.Property(u => u.Nombre).IsRequired().HasMaxLength(255);
+                
             });
         }
             
