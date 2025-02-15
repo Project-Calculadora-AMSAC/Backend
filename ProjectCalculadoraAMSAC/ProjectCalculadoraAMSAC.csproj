@@ -14,6 +14,7 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="MediatR" Version="12.4.1" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.11" />
         <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.2.0" />
@@ -33,16 +34,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="CalculadoraAMSAC\Application\Internal\CommandServices\" />
-      <Folder Include="CalculadoraAMSAC\Application\Internal\QueryServices\" />
-      <Folder Include="CalculadoraAMSAC\Domain\Model\Commands\" />
-      <Folder Include="CalculadoraAMSAC\Domain\Model\Queries\" />
-      <Folder Include="CalculadoraAMSAC\Domain\Repositories\" />
-      <Folder Include="CalculadoraAMSAC\Domain\Services\" />
-      <Folder Include="CalculadoraAMSAC\Infrastructure\Persistence\EFC\Repositories\" />
-      <Folder Include="CalculadoraAMSAC\Interfaces\Controllers\" />
-      <Folder Include="CalculadoraAMSAC\Interfaces\Resources\" />
-      <Folder Include="CalculadoraAMSAC\Interfaces\Transform\" />
       <Folder Include="User\" />
     </ItemGroup>
 

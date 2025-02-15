@@ -50,4 +50,22 @@ public class Estimacion
             throw new KeyNotFoundException($"El atributo con ID {atributoPamId} no existe en esta estimación.");
         }
     }
+    public void ActualizarValores(Dictionary<int, string> nuevosValores)
+    {
+        if (nuevosValores == null || !nuevosValores.Any())
+            throw new ArgumentException("Los valores de la estimación no pueden estar vacíos.");
+
+        foreach (var (atributoPamId, valor) in nuevosValores)
+        {
+            var atributoExistente = _valores.FirstOrDefault(v => v.AtributoPamId == atributoPamId);
+            if (atributoExistente != null)
+            {
+                atributoExistente.ActualizarValor(valor); 
+            }
+            else
+            {
+                throw new KeyNotFoundException($"El atributo con ID {atributoPamId} no existe en esta estimación.");
+            }
+        }
+    }
 }
