@@ -24,11 +24,11 @@ namespace ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Config
         }
         
         public DbSet<AuthUser> AuthUsers { get; set; }
-        public DbSet<Proyecto> Proyecto { get; set; }
-        public DbSet<TipoPam> TipoPam { get; set; }
+        public DbSet<Proyecto> Proyectos { get; set; }
+        public DbSet<TipoPam> TiposPam { get; set; }
         public DbSet<Estimacion> Estimaciones { get; set; }
-        public DbSet<AtributosPam> AtributoPam { get; set; }
-        public DbSet<VariablesPam> VariablePam { get; set; }
+        public DbSet<AtributosPam> AtributosPam { get; set; }
+        public DbSet<VariablesPam> VariablesPam { get; set; }
         public DbSet<ValorAtributoEstimacion> ValoresAtributosEstimacion { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -94,23 +94,7 @@ namespace ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Config
                 atributoPam.Property(a => a.TipoDato).IsRequired();
             });
             
-            // Configuracion ValorAtributoEstimacion
-            builder.Entity<ValorAtributoEstimacion>(valor =>
-            {
-                valor.HasKey(v => v.Id);
-                valor.Property(v => v.Valor).IsRequired();
-
-                valor.HasOne(v => v.Estimacion)
-                    .WithMany(e => e.Valores)
-                    .HasForeignKey(v => v.EstimacionId)
-                    .OnDelete(DeleteBehavior.Cascade);
-
-                valor.HasOne(v => v.AtributoPam)
-                    .WithMany()
-                    .HasForeignKey(v => v.AtributoPamId)
-                    .OnDelete(DeleteBehavior.Cascade);
-            });
-            
+          
             // Configuración de la entidad `Estimacion`
             builder.Entity<Estimacion>(estimacion =>
             {
