@@ -21,12 +21,12 @@ public class TipoPam
     private TipoPam() { }
 
     // ✅ Agregar un AtributoPam (Estructura, sin valores aún)
-    public void AgregarAtributo(string nombre, string tipoDato)
+    public void AgregarAtributo(int unidadMedida,string nombre, string tipoDato)
     {
         if (_atributos.Any(a => a.Nombre == nombre))
             throw new InvalidOperationException($"El atributo '{nombre}' ya existe en este TipoPam.");
 
-        _atributos.Add(new AtributosPam(Id, nombre, tipoDato));
+        _atributos.Add(new AtributosPam(Id,unidadMedida, nombre, tipoDato));
     }
 
     // ✅ Agregar una VariablePam (Constante del TipoPam)
