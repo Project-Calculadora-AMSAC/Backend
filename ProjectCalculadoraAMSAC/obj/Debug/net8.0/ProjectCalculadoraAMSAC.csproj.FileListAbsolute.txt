@@ -175,3 +175,5 @@ E:\ProjectCalculadoraAMSAC\ProjectCalculadoraAMSAC\obj\Debug\net8.0\refint\Proje
 E:\ProjectCalculadoraAMSAC\ProjectCalculadoraAMSAC\obj\Debug\net8.0\ProjectCalculadoraAMSAC.pdb
 E:\ProjectCalculadoraAMSAC\ProjectCalculadoraAMSAC\obj\Debug\net8.0\ProjectCalculadoraAMSAC.genruntimeconfig.cache
 E:\ProjectCalculadoraAMSAC\ProjectCalculadoraAMSAC\obj\Debug\net8.0\ref\ProjectCalculadoraAMSAC.dll
+E:\ProjectCalculadoraAMSAC\ProjectCalculadoraAMSAC\bin\Debug\net8.0\MediatR.dll
+E:\ProjectCalculadoraAMSAC\ProjectCalculadoraAMSAC\bin\Debug\net8.0\MediatR.Contracts.dll

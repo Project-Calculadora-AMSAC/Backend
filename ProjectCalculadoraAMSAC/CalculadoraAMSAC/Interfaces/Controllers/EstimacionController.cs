@@ -29,6 +29,7 @@ public class EstimacionController(IEstimacionQueryService queryService, IEstimac
         return Ok(estimacion);
     }
     
+    [HttpPost("createEstimacion")]
     public async Task<IActionResult> CreateEstimacion([FromBody] CrearEstimacionCommand command)
     {
         if (command == null) return BadRequest("Invalid input.");
