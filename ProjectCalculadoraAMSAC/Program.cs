@@ -4,6 +4,11 @@ using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Application.Internal.CommandServices;
+using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Application.Internal.QueryServices;
+using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Repositories;
+using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Services;
+using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Infrastructure.Persistence.EFC.Repositories;
 using ProjectCalculadoraAMSAC.Shared.Domain.Repositories;
 using ProjectCalculadoraAMSAC.Shared.Infraestructure.Interfaces.ASP.Configuration;
 using ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Configuration;
@@ -134,7 +139,9 @@ builder.Services.AddScoped<IAuthUserQueryService, AuthUserQueryService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IHashingService, HashingService>();
 builder.Services.AddScoped<IIamContextFacade, IamContextFacade>();
-
+builder.Services.AddScoped<IEstimacionRepository, EstimacionRepository>();
+builder.Services.AddScoped<IEstimacionCommandService, EstimacionCommandService>();
+builder.Services.AddScoped<IEstimacionQueryService, EstimacionQueryService>();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
