@@ -1,4 +1,5 @@
-﻿using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Aggregates;
+﻿using System.Text.Json.Serialization;
+using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Aggregates;
 
 namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Entities;
 
@@ -9,7 +10,11 @@ public class TipoPam
     public bool Status { get; set; }
     
     // ✅ Relación con `Estimaciones` (Un TipoPam puede tener múltiples estimaciones)
+    [JsonIgnore]
+
     private readonly List<Estimacion> _estimaciones = new();
+    [JsonIgnore]
+
     public IReadOnlyCollection<Estimacion> Estimaciones => _estimaciones.AsReadOnly();
     // ✅ Relación con `AtributoPam` (Define qué atributos tiene cada TipoPam)
     private readonly List<AtributosPam> _atributos = new();

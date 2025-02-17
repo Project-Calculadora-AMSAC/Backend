@@ -20,16 +20,22 @@ public class EstimacionRepository : BaseRepository<Estimacion>, IEstimacionRepos
         return await _context.Estimaciones
             .Include(e => e.Proyecto)
             .Include(e => e.TipoPam)
-            .Include(e => e.Valores).ThenInclude(v => v.AtributoPam)
+            .ThenInclude(tp => tp.Variables) // Incluir las variables del TipoPam
+            .Include(e => e.Valores)
+            .ThenInclude(v => v.AtributoPam)
             .FirstOrDefaultAsync(e => e.EstimacionId == id);
     }
+
 
     public async Task<List<Estimacion>> GetAllAsync()
     {
         return await _context.Estimaciones
             .Include(e => e.Proyecto)
             .Include(e => e.TipoPam)
-            .Include(e => e.Valores).ThenInclude(v => v.AtributoPam)
+            .ThenInclude(tp => tp.Variables) // Incluir las variables del TipoPam
+            .Include(e => e.Valores)
+            .ThenInclude(v => v.AtributoPam)
             .ToListAsync();
     }
+
 }

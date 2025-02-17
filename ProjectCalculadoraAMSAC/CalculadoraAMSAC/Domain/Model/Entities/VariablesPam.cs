@@ -1,13 +1,17 @@
-﻿namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Entities;
+﻿using System.Text.Json.Serialization;
+
+namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Entities;
 
 public class VariablesPam
 {
-    public int Id { get; private set; }
-    public int TipoPamId { get; private set; }
-    public TipoPam TipoPam { get; private set; }
+    public int Id { get;  set; }
+    public int TipoPamId { get;  set; }
+    [JsonIgnore]
+
+    public TipoPam TipoPam { get;  set; }
     
-    public string Nombre { get; private set; }
-    public decimal Valor { get; private set; }
+    public string Nombre { get;  set; }
+    public decimal Valor { get;  set; }
     
     
     private VariablesPam() { }

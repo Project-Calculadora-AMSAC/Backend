@@ -1,4 +1,5 @@
-﻿using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Aggregates;
+﻿using System.Text.Json.Serialization;
+using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Aggregates;
 
 namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Entities;
 
@@ -6,6 +7,8 @@ public class AtributosPam
 {
     public int AtributoPamId { get; set; } 
     public int TipoPamId { get; set; }
+    [JsonIgnore]
+
     public TipoPam TipoPam { get; set; }
     public int UnidadDeMedidaId {get; set;}
     public UnidadDeMedida UnidadDeMedida { get; set; }

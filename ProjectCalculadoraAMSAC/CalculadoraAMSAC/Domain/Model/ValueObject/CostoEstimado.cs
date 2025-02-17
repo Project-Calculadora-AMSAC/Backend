@@ -78,16 +78,16 @@ public class CostoEstimado
         }
 
         // ✅ Aplicar Gastos Generales, Utilidades e IGV
-        GastosGenerales = CostoDirecto * 0.20m;
-        Utilidades = CostoDirecto * 0.09m;
+        GastosGenerales = CostoDirecto * 0.200989288758199m;
+        Utilidades = CostoDirecto * 0.0900000000203m;
         SubTotal = CostoDirecto + GastosGenerales + Utilidades;
         IGV = SubTotal * 0.18m;
         SubTotalObras = SubTotal + IGV;
-        ExpedienteTecnico = CostoDirecto * 0.06m;
-        Supervision = CostoDirecto * 0.15m;
-        GestionProyecto = CostoDirecto * 0.05m;
-        Capacitacion = CostoDirecto * 0.01m;
-        Contingencias = CostoDirecto * 0.06m;
+        ExpedienteTecnico = CostoDirecto * 0.0617399364388341m;
+        Supervision = CostoDirecto * 0.147885283929561m;
+        GestionProyecto = CostoDirecto * 0.047200000143723m;
+        Capacitacion = CostoDirecto * 0.0120887931329303m;
+        Contingencias = CostoDirecto * 0.058999999880230m;
 
         TotalEstimado = SubTotalObras + ExpedienteTecnico + Supervision + GestionProyecto + Capacitacion + Contingencias;
     }

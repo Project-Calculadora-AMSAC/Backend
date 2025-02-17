@@ -1,4 +1,5 @@
-﻿using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Aggregates;
+﻿using System.Text.Json.Serialization;
+using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Aggregates;
 
 namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Entities;
 
@@ -6,6 +7,8 @@ public class ValorAtributoEstimacion
 {
     public int Id { get; private set; }
     public int EstimacionId { get; private set; }
+    [JsonIgnore]
+
     public Estimacion Estimacion { get; private set; }
 
     public int AtributoPamId { get; private set; }

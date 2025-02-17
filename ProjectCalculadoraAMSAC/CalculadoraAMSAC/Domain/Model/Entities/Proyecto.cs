@@ -1,4 +1,5 @@
-﻿using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Aggregates;
+﻿using System.Text.Json.Serialization;
+using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Aggregates;
 
 namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Entities;
 
@@ -8,8 +9,11 @@ public class Proyecto
     public string Name { get; set; }
     public string Descripcion { get; set; }
     public DateTime FechaRegistro { get; set; }
+    [JsonIgnore]
     
     private readonly List<Estimacion> _estimaciones = new();
+    [JsonIgnore]
+
     public IReadOnlyCollection<Estimacion> Estimaciones => _estimaciones.AsReadOnly();
     
     private Proyecto() { }
