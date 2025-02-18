@@ -31,6 +31,8 @@ namespace ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Config
         public DbSet<VariablesPam> VariablePam { get; set; }
         public DbSet<ValorAtributoEstimacion> ValoresAtributosEstimacion { get; set; }
         public DbSet<UnidadDeMedida> UnidadesDeMedida { get; set; }
+        public DbSet<CostoEstimado> CostoEstimados { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -127,6 +129,32 @@ namespace ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Config
                     .WithOne(v => v.Estimacion)
                     .HasForeignKey(v => v.EstimacionId)
                     .OnDelete(DeleteBehavior.Cascade);
+                estimacion.HasOne(e => e.CostoEstimado)
+                    .WithOne(c => c.Estimacion)
+                    .HasForeignKey<CostoEstimado>(c => c.EstimacionId)
+                    .OnDelete(DeleteBehavior.Cascade); // Si se borra la estimación, se borra su costo
+            });
+            
+            builder.Entity<CostoEstimado>(costo =>
+            {
+                costo.HasKey(c => c.Id);
+                costo.Property(c => c.CostoDirecto).HasColumnType("decimal(18,2)");
+                costo.Property(c => c.GastosGenerales).HasColumnType("decimal(18,2)");
+                costo.Property(c => c.Utilidades).HasColumnType("decimal(18,2)");
+                costo.Property(c => c.IGV).HasColumnType("decimal(18,2)");
+                costo.Property(c => c.ExpedienteTecnico).HasColumnType("decimal(18,2)");
+                costo.Property(c => c.Supervision).HasColumnType("decimal(18,2)");
+                costo.Property(c => c.GestionProyecto).HasColumnType("decimal(18,2)");
+                costo.Property(c => c.Capacitacion).HasColumnType("decimal(18,2)");
+                costo.Property(c => c.Contingencias).HasColumnType("decimal(18,2)");
+                costo.Property(c => c.SubTotal).HasColumnType("decimal(18,2)");
+                costo.Property(c => c.SubTotalObras).HasColumnType("decimal(18,2)");
+                costo.Property(c => c.TotalEstimado).HasColumnType("decimal(18,2)");
+
+                // ✅ Relación con Estimación
+                costo.HasOne(c => c.Estimacion)
+                    .WithOne(e => e.CostoEstimado)
+                    .HasForeignKey<CostoEstimado>(c => c.EstimacionId);
             });
             
             // Configuración de la entidad `AtributoEstimacion`

@@ -3,11 +3,11 @@ using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Aggregates;
 
 namespace ProjectCalculadoraAMSAC.User.Domain.Model.Aggregates;
 
-public class AuthUser(string email, string passwordHash,string name,string phone,DateTime registeredAt)
+public class AuthUser(string email, string passwordHash,string registerArea,DateTime registeredAt)
 
 {
 
-    public AuthUser(): this(string.Empty, string.Empty,string.Empty,string.Empty,DateTime.UtcNow){}
+    public AuthUser(): this(string.Empty, string.Empty,string.Empty,DateTime.UtcNow){}
     
     public Guid Id { get; }
     
@@ -15,7 +15,7 @@ public class AuthUser(string email, string passwordHash,string name,string phone
     
     [JsonIgnore] public string PasswordHash { get; private set; } = passwordHash;
 
-    public string RegisterArea { get; set; } = name; // Nombre completo, ra
+    public string RegisterArea { get; set; } = registerArea; // Nombre completo, ra
     
     public DateTime RegisteredAt { get; set; } = registeredAt; // Fecha de registro
 

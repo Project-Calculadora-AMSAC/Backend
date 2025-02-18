@@ -9,6 +9,7 @@ using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Application.Internal.QueryService
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Repositories;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Services;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Infrastructure.Persistence.EFC.Repositories;
+using ProjectCalculadoraAMSAC.Infrastructure.Persistence.Repositories;
 using ProjectCalculadoraAMSAC.Shared.Domain.Repositories;
 using ProjectCalculadoraAMSAC.Shared.Infraestructure.Interfaces.ASP.Configuration;
 using ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Configuration;
@@ -149,6 +150,7 @@ builder.Services.AddScoped<ITipoPamRepository, TipoPamRepository>();
 builder.Services.AddScoped<ITipoPamCommandService, TipoPamCommandService>();
 builder.Services.AddScoped<ITipoPamQueryService, TipoPamQueryService>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICostoEstimadoRepository, CostoEstimadoRepository>();
 
 var app = builder.Build();
 

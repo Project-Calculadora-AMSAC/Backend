@@ -2,7 +2,6 @@
 
 public class CrearEstimacionResource
 {
-    
     public Guid UsuarioId { get; set; }
     public int ProyectoId { get; set; }
     public int TipoPamId { get; set; }

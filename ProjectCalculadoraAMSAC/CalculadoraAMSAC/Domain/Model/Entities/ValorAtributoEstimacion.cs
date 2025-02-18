@@ -5,16 +5,16 @@ namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Entities;
 
 public class ValorAtributoEstimacion
 {
-    public int Id { get; private set; }
-    public int EstimacionId { get; private set; }
+    public int Id { get;  set; }
+    public int EstimacionId { get;  set; }
     [JsonIgnore]
 
-    public Estimacion Estimacion { get; private set; }
+    public Estimacion Estimacion { get;  set; }
 
-    public int AtributoPamId { get; private set; }
-    public AtributosPam AtributoPam { get; private set; }
+    public int AtributoPamId { get;  set; }
+    public AtributosPam AtributoPam { get;  set; }
 
-    public string Valor { get; private set; } // Se almacena como string y se convierte según `AtributoPam.TipoDato`
+    public string Valor { get;  set; } // Se almacena como string y se convierte según `AtributoPam.TipoDato`
 
     private ValorAtributoEstimacion() { }
 

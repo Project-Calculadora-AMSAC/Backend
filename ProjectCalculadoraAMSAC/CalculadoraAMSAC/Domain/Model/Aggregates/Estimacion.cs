@@ -17,12 +17,14 @@ public class Estimacion
     public DateTime FechaEstimacion { get; private set; }
 
     // ✅ Relación con `AtributoEstimacion`
-    private readonly List<ValorAtributoEstimacion> _valores = new();
+    private readonly List<ValorAtributoEstimacion> _valores  = new(); 
     public IReadOnlyCollection<ValorAtributoEstimacion> Valores => _valores.AsReadOnly();
+
+    public CostoEstimado CostoEstimado { get; private set; }
 
 
     private Estimacion() { }
-
+    
     public Estimacion(Guid usuarioId, int proyectoId, int tipoPamId, string codPam, Dictionary<int, string> valores)
     {
         UsuarioId = usuarioId;
@@ -31,13 +33,32 @@ public class Estimacion
         CodPam = codPam ?? throw new ArgumentNullException(nameof(codPam));
         FechaEstimacion = DateTime.UtcNow;
 
+        if (valores == null)
+            throw new ArgumentNullException(nameof(valores), "Los valores no pueden ser null.");
+
         // ✅ Guardar los valores dinámicos en `AtributoEstimacion`
         foreach (var (atributoPamId, valor) in valores)
         {
             _valores.Add(new ValorAtributoEstimacion(EstimacionId, atributoPamId, valor));
         }
+
+        Console.WriteLine($"DEBUG: Creando Estimacion con ID (antes de guardar en DB): {EstimacionId}");
+
+        // 🔴 Importante: No se debe crear `CostoEstimado` aquí, porque `EstimacionId` es 0 en este punto.
     }
 
+
+
+    public void SetTipoPam(TipoPam tipoPam)
+    {
+        if (tipoPam == null)
+            throw new ArgumentNullException(nameof(tipoPam), "TipoPam no puede ser null.");
+
+        Console.WriteLine($"DEBUG: Asignando TipoPam a Estimacion -> TipoPamId: {tipoPam.Id}, Nombre: {tipoPam.Name}");
+        TipoPam = tipoPam;
+    }
+
+    
     public void AsignarValor(int atributoPamId, string valor)
     {
         var valorExistente = _valores.FirstOrDefault(v => v.AtributoPamId == atributoPamId);

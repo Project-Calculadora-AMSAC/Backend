@@ -37,5 +37,10 @@ public class EstimacionRepository : BaseRepository<Estimacion>, IEstimacionRepos
             .ThenInclude(v => v.AtributoPam)
             .ToListAsync();
     }
+    
+    public IQueryable<Estimacion> GetQueryable()
+    {
+        return _context.Estimaciones.Include(e => e.CostoEstimado); // 🔹 Soporta consultas avanzadas
+    }
 
 }

@@ -1,13 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Aggregates;
-using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Entities;
 
-namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.ValueObject;
+namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Entities;
 
 public class CostoEstimado
 {
+    [Key]
+    public int Id { get; private set; }
+
+    public int EstimacionId { get; private set; }
+
+    [ForeignKey("EstimacionId")]
+    public Estimacion Estimacion { get; private set; }
+
     public decimal CostoDirecto { get; private set; }
     public decimal GastosGenerales { get; private set; }
     public decimal Utilidades { get; private set; }
@@ -25,23 +31,41 @@ public class CostoEstimado
 
     public CostoEstimado(Estimacion estimacion)
     {
-        if (estimacion.TipoPam == null || !estimacion.TipoPam.Variables.Any())
-            throw new InvalidOperationException("No hay variables asignadas para este Tipo de PAM.");
+        if (estimacion.TipoPam == null)
+        {
+            Console.WriteLine($"ERROR: `TipoPam` en la estimación {estimacion.EstimacionId} es NULL.");
+            throw new InvalidOperationException($"No hay un TipoPam asignado a la estimación con ID {estimacion.EstimacionId}.");
+        }
 
-        // ✅ Mapeamos las constantes del TipoPam en un diccionario
+        if (estimacion.TipoPam.Variables == null || !estimacion.TipoPam.Variables.Any())
+        {
+            Console.WriteLine($"ERROR: TipoPam {estimacion.TipoPam.Id} no tiene variables cargadas.");
+            throw new InvalidOperationException($"El TipoPam con ID {estimacion.TipoPam.Id} no tiene variables asignadas.");
+        }
+
+        Console.WriteLine($"DEBUG: Creando `CostoEstimado` para estimación ID {estimacion.EstimacionId}");
+
+        EstimacionId = estimacion.EstimacionId;
+        CalcularCostos(estimacion);
+    }
+
+
+    public void CalcularCostos(Estimacion estimacion)
+    {
+        
+        if (estimacion.Valores == null || !estimacion.Valores.Any())
+        {
+            throw new InvalidOperationException($"No hay valores asignados a la estimación ID {estimacion.EstimacionId}.");
+        }
+        
         var variables = estimacion.TipoPam.Variables.ToDictionary(v => v.Nombre, v => v.Valor);
+        var atributos = estimacion.Valores.ToDictionary(v => v.AtributoPam.Nombre, v => v.Valor);
+        Console.WriteLine($"DEBUG: CostoEstimado -> Estimación ID: {estimacion.EstimacionId}, Valores: {atributos.Count}");
 
-        // ✅ Convertimos los valores de estimación en un diccionario uniendo con `AtributosPam`
-        var atributos = estimacion.Valores
-            .ToDictionary(
-                v => v.AtributoPam.Nombre,   // Clave: nombre del atributo
-                v => v.Valor                 // Valor: el valor en string
-            );
-
-        // ✅ Inicializamos el costo directo
+        // ✅ Inicializar costo directo
         CostoDirecto = 0;
 
-        // ✅ Extraemos dinámicamente los valores requeridos
+        // ✅ Extraer valores de la estimación
         decimal volumen = atributos.ContainsKey("Volumen") ? Convert.ToDecimal(atributos["Volumen"]) : 0;
         decimal area = atributos.ContainsKey("Área") ? Convert.ToDecimal(atributos["Área"]) : 0;
         decimal distanciaTraslado = atributos.ContainsKey("DistanciaTraslado") ? Convert.ToDecimal(atributos["DistanciaTraslado"]) : 0;
@@ -78,16 +102,16 @@ public class CostoEstimado
         }
 
         // ✅ Aplicar Gastos Generales, Utilidades e IGV
-        GastosGenerales = CostoDirecto * 0.200989288758199m;
-        Utilidades = CostoDirecto * 0.0900000000203m;
+        GastosGenerales = CostoDirecto * (variables.ContainsKey("FactorGastosGenerales") ? variables["FactorGastosGenerales"] : 0.2m);
+        Utilidades = CostoDirecto * (variables.ContainsKey("FactorUtilidades") ? variables["FactorUtilidades"] : 0.09m);
         SubTotal = CostoDirecto + GastosGenerales + Utilidades;
-        IGV = SubTotal * 0.18m;
+        IGV = SubTotal * (variables.ContainsKey("FactorIGV") ? variables["FactorIGV"] : 0.18m);
         SubTotalObras = SubTotal + IGV;
-        ExpedienteTecnico = CostoDirecto * 0.0617399364388341m;
-        Supervision = CostoDirecto * 0.147885283929561m;
-        GestionProyecto = CostoDirecto * 0.047200000143723m;
-        Capacitacion = CostoDirecto * 0.0120887931329303m;
-        Contingencias = CostoDirecto * 0.058999999880230m;
+        ExpedienteTecnico = CostoDirecto * (variables.ContainsKey("FactorExpedienteTecnico") ? variables["FactorExpedienteTecnico"] : 0.061m);
+        Supervision = CostoDirecto * (variables.ContainsKey("FactorSupervision") ? variables["FactorSupervision"] : 0.148m);
+        GestionProyecto = CostoDirecto * (variables.ContainsKey("FactorGestionProyecto") ? variables["FactorGestionProyecto"] : 0.047m);
+        Capacitacion = CostoDirecto * (variables.ContainsKey("FactorCapacitacion") ? variables["FactorCapacitacion"] : 0.012m);
+        Contingencias = CostoDirecto * (variables.ContainsKey("FactorContingencias") ? variables["FactorContingencias"] : 0.059m);
 
         TotalEstimado = SubTotalObras + ExpedienteTecnico + Supervision + GestionProyecto + Capacitacion + Contingencias;
     }

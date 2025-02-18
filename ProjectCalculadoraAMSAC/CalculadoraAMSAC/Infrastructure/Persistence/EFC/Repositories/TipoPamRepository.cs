@@ -31,4 +31,11 @@ public class TipoPamRepository : BaseRepository<TipoPam>, ITipoPamRepository
             .Include(tp => tp.Variables)
             .ToListAsync();
     }
+
+    public async Task<TipoPam?> GetByIdWithVariablesAsync(int id)
+    {
+        return await _context.TipoPam
+            .Include(tp => tp.Variables) // ✅ Cargar las variables correctamente
+            .FirstOrDefaultAsync(tp => tp.Id == id);
+    }
 }

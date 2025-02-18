@@ -8,4 +8,6 @@ namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Repositories;
     {
         Task<Estimacion> GetByIdAsync(int id);
         Task<List<Estimacion>> GetAllAsync();
+        IQueryable<Estimacion> GetQueryable(); // ✅ Permite usar `Include()`
+
     }
