@@ -149,6 +149,13 @@ builder.Services.AddScoped<IProyectoQueryService, ProyectoQueryService>();
 builder.Services.AddScoped<ITipoPamRepository, TipoPamRepository>();
 builder.Services.AddScoped<ITipoPamCommandService, TipoPamCommandService>();
 builder.Services.AddScoped<ITipoPamQueryService, TipoPamQueryService>();
+builder.Services.AddScoped<IAtributoPamRepository, AtributoPamRepository>();
+builder.Services.AddScoped<IAtributoPamCommandService, AtributoPamCommandService>();
+builder.Services.AddScoped<IAtributoPamQueryService, AtributoPamQueryService>();
+builder.Services.AddScoped<IUnidadDeMedidaRepository, UnidadDeMedidaRepository>();
+builder.Services.AddScoped<IUnidadDeMedidaCommandService, UnidadDeMedidaCommandService>();
+builder.Services.AddScoped<IUnidadDeMedidaQueryService, UnidadDeMedidaQueryService>();
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICostoEstimadoRepository, CostoEstimadoRepository>();
 
