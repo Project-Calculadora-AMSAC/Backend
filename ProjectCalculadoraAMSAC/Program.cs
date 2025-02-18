@@ -142,6 +142,9 @@ builder.Services.AddScoped<IIamContextFacade, IamContextFacade>();
 builder.Services.AddScoped<IEstimacionRepository, EstimacionRepository>();
 builder.Services.AddScoped<IEstimacionCommandService, EstimacionCommandService>();
 builder.Services.AddScoped<IEstimacionQueryService, EstimacionQueryService>();
+builder.Services.AddScoped<IProyectoRepository, ProyectoRepository>();
+builder.Services.AddScoped<IProyectoCommandService, ProyectoCommandService>();
+builder.Services.AddScoped<IProyectoQueryService, ProyectoQueryService>();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
