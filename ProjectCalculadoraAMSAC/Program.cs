@@ -151,6 +151,10 @@ builder.Services.AddScoped<ITipoPamQueryService, TipoPamQueryService>();
 builder.Services.AddScoped<IAtributoPamRepository, AtributoPamRepository>();
 builder.Services.AddScoped<IAtributoPamCommandService, AtributoPamCommandService>();
 builder.Services.AddScoped<IAtributoPamQueryService, AtributoPamQueryService>();
+builder.Services.AddScoped<IUnidadDeMedidaRepository, UnidadDeMedidaRepository>();
+builder.Services.AddScoped<IUnidadDeMedidaCommandService, UnidadDeMedidaCommandService>();
+builder.Services.AddScoped<IUnidadDeMedidaQueryService, UnidadDeMedidaQueryService>();
+
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
