@@ -145,6 +145,9 @@ builder.Services.AddScoped<IEstimacionQueryService, EstimacionQueryService>();
 builder.Services.AddScoped<IProyectoRepository, ProyectoRepository>();
 builder.Services.AddScoped<IProyectoCommandService, ProyectoCommandService>();
 builder.Services.AddScoped<IProyectoQueryService, ProyectoQueryService>();
+builder.Services.AddScoped<ITipoPamRepository, TipoPamRepository>();
+builder.Services.AddScoped<ITipoPamCommandService, TipoPamCommandService>();
+builder.Services.AddScoped<ITipoPamQueryService, TipoPamQueryService>();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();

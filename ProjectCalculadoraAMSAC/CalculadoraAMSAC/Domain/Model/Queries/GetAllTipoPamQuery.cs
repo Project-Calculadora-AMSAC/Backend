@@ -1,6 +1,6 @@
-﻿namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Queries;
+﻿using MediatR;
+using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Entities;
 
-public class GetAllTipoPamQuery
-{
-    
-}
+namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Queries;
+
+public record GetAllTipoPamQuery : IRequest<List<TipoPam>>;

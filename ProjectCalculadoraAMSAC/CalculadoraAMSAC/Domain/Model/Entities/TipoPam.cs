@@ -24,6 +24,11 @@ public class TipoPam
     public IReadOnlyCollection<VariablesPam> Variables => _variables.AsReadOnly();
    
     private TipoPam() { }
+    public TipoPam(string name, bool status = true)
+    {
+        Name = name ?? throw new ArgumentNullException(nameof(name));
+        Status = status;
+    }
 
     // ✅ Agregar un AtributoPam (Estructura, sin valores aún)
     public void AgregarAtributo(int unidadMedida,string nombre, string tipoDato)
