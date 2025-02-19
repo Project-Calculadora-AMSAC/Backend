@@ -9,7 +9,7 @@ namespace ProjectCalculadoraAMSAC.User.Interfaces.REST.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("amsac/v1/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
 public class AuthUserController(IAuthUserQueryService authUserQueryService, IAuthUserCommandService userCommandService) : ControllerBase
 {
