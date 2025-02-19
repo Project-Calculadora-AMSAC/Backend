@@ -10,7 +10,7 @@ using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Commands;
 namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Interfaces.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("amsac/v1/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
 public class EstimacionController : ControllerBase
 {
@@ -36,6 +36,7 @@ public class EstimacionController : ControllerBase
         {
             EstimacionId = estimacion.EstimacionId,
             UsuarioId = estimacion.UsuarioId,
+            CodPam = estimacion.CodPam,
             Proyecto = estimacion.Proyecto,
             TipoPam = estimacion.TipoPam,
             Valores = estimacion.Valores,

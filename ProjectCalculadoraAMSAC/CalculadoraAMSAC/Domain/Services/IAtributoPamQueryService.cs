@@ -7,4 +7,5 @@ public interface IAtributoPamQueryService
 {
     Task<AtributosPam> Handle(GetAtributoPamByIdQuery query);
     Task<List<AtributosPam>> Handle(GetAllAtributosPamQuery query);
+    Task<List<AtributosPam>> Handle(GetAtributosPamByTipoPamIdQuery query);
 }

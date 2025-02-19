@@ -23,4 +23,9 @@ public class AtributoPamQueryService : IAtributoPamQueryService
     {
         return await _atributoPamRepository.GetAllAsync();
     }
+
+    public async Task<List<AtributosPam>> Handle(GetAtributosPamByTipoPamIdQuery query)
+    {
+        return await _atributoPamRepository.GetAllByTipoPamAsync(query.TipoPamId);
+    }
 }

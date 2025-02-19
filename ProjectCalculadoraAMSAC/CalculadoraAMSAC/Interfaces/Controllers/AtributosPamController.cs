@@ -7,7 +7,7 @@ using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Services;
 namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Interfaces.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("amsac/v1/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
 public class AtributosPamController(IAtributoPamQueryService queryService, IAtributoPamCommandService commandService)
     : ControllerBase
@@ -24,6 +24,18 @@ public class AtributosPamController(IAtributoPamQueryService queryService, IAtri
     public async Task<IActionResult> GetAtributoPamById(int id)
     {
         var query = new GetAtributoPamByIdQuery(id);
+        var atributoPam = await queryService.Handle(query);
+
+        if (atributoPam == null) return NotFound("AtributoPam not found.");
+
+        return Ok(atributoPam);
+    }
+    
+    
+    [HttpGet("atributos/{tipoPamid}")]
+    public async Task<IActionResult> GetAtributoPamByTipoPamId(int tipoPamid)
+    {
+        var query = new GetAtributosPamByTipoPamIdQuery(tipoPamid);
         var atributoPam = await queryService.Handle(query);
 
         if (atributoPam == null) return NotFound("AtributoPam not found.");

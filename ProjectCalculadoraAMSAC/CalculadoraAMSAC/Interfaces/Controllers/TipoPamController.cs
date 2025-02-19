@@ -7,12 +7,12 @@ using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Services;
 namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Interfaces.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("amsac/v1/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
 public class TipoPamController(ITipoPamQueryService queryService, ITipoPamCommandService commandService)
     : ControllerBase
 {
-    [HttpGet]
+    [HttpGet("tipoPams")]
     public async Task<IActionResult> GetAllTipoPams()
     {
         var query = new GetAllTipoPamQuery();

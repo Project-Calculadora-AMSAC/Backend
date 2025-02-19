@@ -7,7 +7,7 @@ using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Services;
 namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Interfaces.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("amsac/v1/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
 public class ProyectoController(IProyectoQueryService queryService, IProyectoCommandService commandService)
     : ControllerBase

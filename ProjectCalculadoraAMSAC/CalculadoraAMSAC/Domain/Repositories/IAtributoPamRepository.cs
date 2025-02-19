@@ -7,4 +7,5 @@ public interface IAtributoPamRepository : IBaseRepository<AtributosPam>
 {
     Task<AtributosPam> GetByIdAsync(int id);
     Task<List<AtributosPam>> GetAllAsync();
+    Task<List<AtributosPam>> GetAllByTipoPamAsync(int tipoPamId);
 }
