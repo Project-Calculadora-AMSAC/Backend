@@ -3,4 +3,4 @@ using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Entities;
 
 namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Queries;
 
-public record GetAllValoresAtributoEstimacionQuery() : IRequest<IEnumerable<ValorAtributoEstimacion>>;
+public record GetAllValoresAtributoEstimacionQuery(int EstimacionId) : IRequest<IEnumerable<ValorAtributoEstimacion>>;

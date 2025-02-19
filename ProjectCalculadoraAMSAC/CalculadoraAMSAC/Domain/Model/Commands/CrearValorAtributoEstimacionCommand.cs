@@ -1,6 +1,9 @@
-﻿namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Commands;
+﻿using MediatR;
 
-public class CrearValorAtributoEstimacionCommand
-{
-    
-}
+namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Commands;
+
+public record CrearValorAtributoEstimacionCommand(
+    int EstimacionId,
+    int AtributoPamId,
+    string Valor
+) : IRequest<int>;

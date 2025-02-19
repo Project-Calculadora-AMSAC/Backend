@@ -1,4 +1,6 @@
-﻿namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Services;
+﻿using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Commands;
+
+namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Services;
 
 public interface IValorAtributoEstimacionCommandService
 {

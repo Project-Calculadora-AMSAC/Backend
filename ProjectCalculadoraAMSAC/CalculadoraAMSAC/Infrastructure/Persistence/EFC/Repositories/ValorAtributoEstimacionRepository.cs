@@ -15,7 +15,7 @@ public class ValorAtributoEstimacionRepository : BaseRepository<ValorAtributoEst
         _context = context;
     }
 
-    public async Task<ValorAtributoEstimacion> GetByIdAsync(int id)
+    public async Task<ValorAtributoEstimacion?> GetByIdAsync(int id)
     {
         return await _context.ValoresAtributosEstimacion
             .Include(v => v.Estimacion)

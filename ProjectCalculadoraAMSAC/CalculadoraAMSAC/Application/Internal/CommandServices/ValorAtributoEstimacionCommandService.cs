@@ -1,4 +1,6 @@
-﻿using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Repositories;
+﻿using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Commands;
+using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Entities;
+using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Repositories;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Services;
 using ProjectCalculadoraAMSAC.Shared.Domain.Repositories;
 

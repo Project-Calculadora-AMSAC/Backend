@@ -1,4 +1,5 @@
 ﻿using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Entities;
+using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Queries;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Repositories;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Services;
 
@@ -15,7 +16,7 @@ public class ValorAtributoEstimacionQueryService : IValorAtributoEstimacionQuery
 
     public async Task<IEnumerable<ValorAtributoEstimacion>> Handle(GetAllValoresAtributoEstimacionQuery query)
     {
-        return await _valorAtributoEstimacionRepository.GetAllAsync();
+        return await _valorAtributoEstimacionRepository.GetAllByEstimacionIdAsync(query.EstimacionId);
     }
 
     public async Task<ValorAtributoEstimacion?> Handle(GetValorAtributoEstimacionByIdQuery query)
