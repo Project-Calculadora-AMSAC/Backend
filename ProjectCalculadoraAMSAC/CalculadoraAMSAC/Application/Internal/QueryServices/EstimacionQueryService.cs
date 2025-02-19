@@ -41,4 +41,13 @@ public class EstimacionQueryService(IEstimacionRepository estimacionRepository) 
             .Where(e => e.ProyectoId == query.ProyectoId) // 🔹 Extraer `query.ProyectoId`
             .SumAsync(e => e.CostoEstimado != null ? e.CostoEstimado.TotalEstimado : 0);
     }
+    public async Task<List<Estimacion>> Handle(GetEstimacionesByProyectoIdQuery query)
+    {
+        return await estimacionRepository.GetByProyectoIdAsync(query.ProyectoId);
+    }
+
+    public async Task<List<Estimacion>> Handle(GetEstimacionesByTipoPamIdQuery query)
+    {
+        return await estimacionRepository.GetByTipoPamIdAsync(query.TipoPamId);
+    }
 }

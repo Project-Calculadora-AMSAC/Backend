@@ -163,4 +163,27 @@ public async Task<IActionResult> CreateEstimacion([FromBody] CrearEstimacionReso
         var totalCost = await _queryService.Handle(query);
         return Ok(new { ProyectoId = proyectoId, TotalCost = totalCost });
     }
+    [HttpGet("proyecto/{proyectoId}")]
+    public async Task<IActionResult> GetEstimacionesByProyectoId(int proyectoId)
+    {
+        var query = new GetEstimacionesByProyectoIdQuery(proyectoId);
+        var estimaciones = await _queryService.Handle(query);
+
+        if (estimaciones == null || !estimaciones.Any())
+            return NotFound("No estimaciones found for this project.");
+
+        return Ok(estimaciones);
+    }
+
+    [HttpGet("tipopam/{tipoPamId}")]
+    public async Task<IActionResult> GetEstimacionesByTipoPamId(int tipoPamId)
+    {
+        var query = new GetEstimacionesByTipoPamIdQuery(tipoPamId);
+        var estimaciones = await _queryService.Handle(query);
+
+        if (estimaciones == null || !estimaciones.Any())
+            return NotFound("No estimaciones found for this TipoPam.");
+
+        return Ok(estimaciones);
+    }
 }

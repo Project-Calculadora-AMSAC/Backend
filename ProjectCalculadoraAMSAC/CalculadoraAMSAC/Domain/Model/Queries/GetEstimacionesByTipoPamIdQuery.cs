@@ -1,0 +1,6 @@
+﻿using MediatR;
+using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Aggregates;
+
+namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Queries;
+
+public record GetEstimacionesByTipoPamIdQuery(int TipoPamId) : IRequest<List<Estimacion>>;

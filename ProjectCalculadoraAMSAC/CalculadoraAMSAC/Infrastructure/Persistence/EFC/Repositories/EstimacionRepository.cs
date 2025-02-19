@@ -42,5 +42,18 @@ public class EstimacionRepository : BaseRepository<Estimacion>, IEstimacionRepos
     {
         return _context.Estimaciones.Include(e => e.CostoEstimado); // 🔹 Soporta consultas avanzadas
     }
+    public async Task<List<Estimacion>> GetByProyectoIdAsync(int proyectoId)
+    {
+        return await _context.Estimaciones
+            .Where(e => e.ProyectoId == proyectoId)
+            .ToListAsync();
+    }
+
+    public async Task<List<Estimacion>> GetByTipoPamIdAsync(int tipoPamId)
+    {
+        return await _context.Estimaciones
+            .Where(e => e.TipoPamId == tipoPamId)
+            .ToListAsync();
+    }
 
 }
