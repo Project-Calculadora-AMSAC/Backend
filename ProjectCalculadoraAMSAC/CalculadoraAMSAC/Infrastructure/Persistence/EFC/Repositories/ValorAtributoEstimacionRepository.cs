@@ -1,4 +1,10 @@
-﻿namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Infrastructure.Persistence.EFC.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
+using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Entities;
+using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Repositories;
+using ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Configuration;
+using ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Repositories;
+
+namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Infrastructure.Persistence.EFC.Repositories;
 
 public class ValorAtributoEstimacionRepository : BaseRepository<ValorAtributoEstimacion>, IValorAtributoEstimacionRepository
 {
