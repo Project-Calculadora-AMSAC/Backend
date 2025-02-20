@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Aggregates;
 
 namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Entities;
@@ -12,6 +13,7 @@ public class CostoEstimado
     public int EstimacionId { get; private set; }
 
     [ForeignKey("EstimacionId")]
+    [JsonIgnore]
     public Estimacion Estimacion { get; private set; }
 
     public decimal CostoDirecto { get; private set; }

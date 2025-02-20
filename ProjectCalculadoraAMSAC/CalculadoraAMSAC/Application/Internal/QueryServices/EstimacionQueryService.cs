@@ -43,11 +43,24 @@ public class EstimacionQueryService(IEstimacionRepository estimacionRepository) 
     }
     public async Task<List<Estimacion>> Handle(GetEstimacionesByProyectoIdQuery query)
     {
-        return await estimacionRepository.GetByProyectoIdAsync(query.ProyectoId);
+        return await estimacionRepository
+            .GetQueryable() // IQueryable<Estimacion>
+            .Include(e => e.CostoEstimado)      // Incluir CostoEstimado
+            .Include(e => e.Proyecto)           // Incluir Proyecto
+            .Include(e => e.TipoPam)            // Incluir TipoPam
+            .Include(e => e.Valores)            // Incluir Valores
+            .Where(e => e.ProyectoId == query.ProyectoId) // Filtrar por ProyectoId
+            .ToListAsync(); // Ejecutar la consulta de forma asincrónica
     }
-
     public async Task<List<Estimacion>> Handle(GetEstimacionesByTipoPamIdQuery query)
     {
-        return await estimacionRepository.GetByTipoPamIdAsync(query.TipoPamId);
-    }
+        return await estimacionRepository
+            .GetQueryable() // IQueryable<Estimacion>
+            .Include(e => e.CostoEstimado)      // Incluir CostoEstimado
+            .Include(e => e.Proyecto)           // Incluir Proyecto
+            .Include(e => e.TipoPam)            // Incluir TipoPam
+            .Include(e => e.Valores)            // Incluir Valores
+            .Where(e => e.TipoPamId == query.TipoPamId) // Filtrar por ProyectoId
+            .ToListAsync(); // Ejecutar la consulta de forma asincrónica
+                            }
 }
