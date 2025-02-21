@@ -10,4 +10,5 @@ public interface IEstimacionQueryService
     Task<decimal?> Handle(GetTotalCostByProjectIdQuery query); // 🔹 Ahora recibe un objeto `query`
     Task<List<Estimacion>> Handle(GetEstimacionesByProyectoIdQuery query);
     Task<List<Estimacion>> Handle(GetEstimacionesByTipoPamIdQuery query);
+    Task<List<Estimacion>> Handle(GetEstimacionesByProyectoIdAndTipoPamIdQuery query);
 }

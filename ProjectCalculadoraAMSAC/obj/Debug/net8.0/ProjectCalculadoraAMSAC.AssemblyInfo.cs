@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ProjectCalculadoraAMSAC")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fc1792563ca531ead61bef544990a04a215060a3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0ac6c1af50691717046c9ae4e09b2821569e4b86")]
 [assembly: System.Reflection.AssemblyProductAttribute("ProjectCalculadoraAMSAC")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ProjectCalculadoraAMSAC")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
