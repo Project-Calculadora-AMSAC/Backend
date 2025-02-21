@@ -186,4 +186,16 @@ public async Task<IActionResult> CreateEstimacion([FromBody] CrearEstimacionReso
 
         return Ok(estimaciones);
     }
+    
+    [HttpGet("buscar")]
+    public async Task<IActionResult> GetEstimaciones([FromQuery] int? proyectoId, [FromQuery] int? tipoPamId)
+    {
+        var query = new GetEstimacionesByProyectoIdAndTipoPamIdQuery(proyectoId, tipoPamId);
+        var estimaciones = await _queryService.Handle(query);
+
+        if (estimaciones == null || !estimaciones.Any())
+            return NotFound("No estimaciones found with the given filters.");
+
+        return Ok(estimaciones);
+    }
 }
