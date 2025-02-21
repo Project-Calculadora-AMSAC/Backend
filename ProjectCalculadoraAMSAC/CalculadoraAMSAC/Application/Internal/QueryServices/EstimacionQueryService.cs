@@ -71,10 +71,7 @@ public class EstimacionQueryService(IEstimacionRepository estimacionRepository) 
             .Include(e => e.Proyecto)
             .Include(e => e.TipoPam)
             .Include(e => e.Valores)
-            .Where(e => 
-                (!query.ProyectoId.HasValue || e.ProyectoId == query.ProyectoId.Value) && 
-                (!query.TipoPamId.HasValue || e.TipoPamId == query.TipoPamId.Value)
-            )
+            .Where(e => e.TipoPamId == query.TipoPamId && e.ProyectoId == query.ProyectoId) // ✅ Corrección aquí
             .ToListAsync();
     }
 }

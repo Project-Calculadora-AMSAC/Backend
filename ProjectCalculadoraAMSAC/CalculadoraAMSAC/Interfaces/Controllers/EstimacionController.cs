@@ -188,7 +188,7 @@ public async Task<IActionResult> CreateEstimacion([FromBody] CrearEstimacionReso
     }
     
     [HttpGet("buscar")]
-    public async Task<IActionResult> GetEstimaciones([FromQuery] int? proyectoId, [FromQuery] int? tipoPamId)
+    public async Task<IActionResult> GetEstimaciones(int proyectoId, int tipoPamId)
     {
         var query = new GetEstimacionesByProyectoIdAndTipoPamIdQuery(proyectoId, tipoPamId);
         var estimaciones = await _queryService.Handle(query);
