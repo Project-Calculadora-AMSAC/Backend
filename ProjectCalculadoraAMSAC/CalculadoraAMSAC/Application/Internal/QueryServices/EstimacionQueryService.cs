@@ -63,4 +63,18 @@ public class EstimacionQueryService(IEstimacionRepository estimacionRepository) 
             .Where(e => e.TipoPamId == query.TipoPamId) // Filtrar por ProyectoId
             .ToListAsync(); // Ejecutar la consulta de forma asincrónica
                             }
+    public async Task<List<Estimacion>> Handle(GetEstimacionesByProyectoIdAndTipoPamIdQuery query)
+    {
+        return await estimacionRepository
+            .GetQueryable()
+            .Include(e => e.CostoEstimado)
+            .Include(e => e.Proyecto)
+            .Include(e => e.TipoPam)
+            .Include(e => e.Valores)
+            .Where(e => 
+                (!query.ProyectoId.HasValue || e.ProyectoId == query.ProyectoId.Value) && 
+                (!query.TipoPamId.HasValue || e.TipoPamId == query.TipoPamId.Value)
+            )
+            .ToListAsync();
+    }
 }

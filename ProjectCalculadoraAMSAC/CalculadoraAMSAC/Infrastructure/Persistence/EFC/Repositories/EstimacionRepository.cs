@@ -55,5 +55,22 @@ public class EstimacionRepository : BaseRepository<Estimacion>, IEstimacionRepos
             .Where(e => e.TipoPamId == tipoPamId)
             .ToListAsync();
     }
+    public async Task<List<Estimacion>> GetByProyectoIdAndTipoPamIdAsync(int? proyectoId, int? tipoPamId)
+    {
+        var query = _context.Estimaciones.AsQueryable();
+
+        if (proyectoId.HasValue)
+            query = query.Where(e => e.ProyectoId == proyectoId.Value);
+
+        if (tipoPamId.HasValue)
+            query = query.Where(e => e.TipoPamId == tipoPamId.Value);
+
+        return await query
+            .Include(e => e.CostoEstimado)
+            .Include(e => e.Proyecto)
+            .Include(e => e.TipoPam)
+            .Include(e => e.Valores)
+            .ToListAsync();
+    }
 
 }
