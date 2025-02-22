@@ -1,5 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Globalization;
+using System.Linq;
 using System.Text.Json.Serialization;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Aggregates;
 
@@ -51,10 +55,14 @@ public class CostoEstimado
         CalcularCostos(estimacion);
     }
 
+    private decimal ParseDecimal(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input)) return 0;
+        return decimal.Parse(input.Replace(",", "."), CultureInfo.InvariantCulture);
+    }
 
     public void CalcularCostos(Estimacion estimacion)
     {
-        
         if (estimacion.Valores == null || !estimacion.Valores.Any())
         {
             throw new InvalidOperationException($"No hay valores asignados a la estimación ID {estimacion.EstimacionId}.");
@@ -62,20 +70,18 @@ public class CostoEstimado
         
         var variables = estimacion.TipoPam.Variables.ToDictionary(v => v.Nombre, v => v.Valor);
         var atributos = estimacion.Valores.ToDictionary(v => v.AtributoPam.Nombre, v => v.Valor);
+        
         Console.WriteLine($"DEBUG: CostoEstimado -> Estimación ID: {estimacion.EstimacionId}, Valores: {atributos.Count}");
 
-        // ✅ Inicializar costo directo
         CostoDirecto = 0;
 
-        // ✅ Extraer valores de la estimación
-        decimal volumen = atributos.ContainsKey("Volumen") ? Convert.ToDecimal(atributos["Volumen"]) : 0;
-        decimal area = atributos.ContainsKey("Área") ? Convert.ToDecimal(atributos["Área"]) : 0;
-        decimal distanciaTraslado = atributos.ContainsKey("DistanciaTraslado") ? Convert.ToDecimal(atributos["DistanciaTraslado"]) : 0;
+        decimal volumen = atributos.ContainsKey("Volumen") ? ParseDecimal(atributos["Volumen"]) : 0;
+        decimal area = atributos.ContainsKey("Área") ? ParseDecimal(atributos["Área"]) : 0;
+        decimal distanciaTraslado = atributos.ContainsKey("DistanciaTraslado") ? ParseDecimal(atributos["DistanciaTraslado"]) : 0;
         bool generacionDAR = atributos.ContainsKey("GeneracionDAR") && atributos["GeneracionDAR"] == "true";
         bool cobertura = atributos.ContainsKey("Cobertura") && atributos["Cobertura"] == "true";
         string tipoCobertura = atributos.ContainsKey("TipoCobertura") ? atributos["TipoCobertura"] : "NINGUNA";
 
-        // ✅ Aplicar lógica de cálculo según el Tipo de PAM
         switch (estimacion.TipoPam.Name)
         {
             case "Desmonte de Mina":
@@ -91,30 +97,20 @@ public class CostoEstimado
                     (variables.ContainsKey("CorreccionGlobal") ? variables["CorreccionGlobal"] : 0);
                 break;
 
-            case "Bocamina":
-                CostoDirecto =
-                    (variables.ContainsKey("FactorCorreccionArea") ? area * variables["FactorCorreccionArea"] : 0) +
-                    (variables.ContainsKey("CorreccionHumedad") ? variables["CorreccionHumedad"] : 0) +
-                    (variables.ContainsKey("CorreccionIluminacion") ? variables["CorreccionIluminacion"] : 0) +
-                    (variables.ContainsKey("CorreccionSeguridad") ? variables["CorreccionSeguridad"] : 0);
-                break;
-
             default:
                 throw new InvalidOperationException($"El Tipo de PAM '{estimacion.TipoPam.Name}' no tiene una fórmula de cálculo definida.");
         }
 
-        // ✅ Aplicar Gastos Generales, Utilidades e IGV
-        GastosGenerales = CostoDirecto * (variables.ContainsKey("FactorGastosGenerales") ? variables["FactorGastosGenerales"] : 0.2m);
-        Utilidades = CostoDirecto * (variables.ContainsKey("FactorUtilidades") ? variables["FactorUtilidades"] : 0.09m);
+        GastosGenerales = CostoDirecto * 0.2m;
+        Utilidades = CostoDirecto * 0.09m;
         SubTotal = CostoDirecto + GastosGenerales + Utilidades;
-        IGV = SubTotal * (variables.ContainsKey("FactorIGV") ? variables["FactorIGV"] : 0.18m);
+        IGV = SubTotal * 0.18m;
         SubTotalObras = SubTotal + IGV;
-        ExpedienteTecnico = CostoDirecto * (variables.ContainsKey("FactorExpedienteTecnico") ? variables["FactorExpedienteTecnico"] : 0.061m);
-        Supervision = CostoDirecto * (variables.ContainsKey("FactorSupervision") ? variables["FactorSupervision"] : 0.148m);
-        GestionProyecto = CostoDirecto * (variables.ContainsKey("FactorGestionProyecto") ? variables["FactorGestionProyecto"] : 0.047m);
-        Capacitacion = CostoDirecto * (variables.ContainsKey("FactorCapacitacion") ? variables["FactorCapacitacion"] : 0.012m);
-        Contingencias = CostoDirecto * (variables.ContainsKey("FactorContingencias") ? variables["FactorContingencias"] : 0.059m);
-
+        ExpedienteTecnico = CostoDirecto * 0.061m;
+        Supervision = CostoDirecto * 0.148m;
+        GestionProyecto = CostoDirecto * 0.047m;
+        Capacitacion = CostoDirecto * 0.012m;
+        Contingencias = CostoDirecto * 0.059m;
         TotalEstimado = SubTotalObras + ExpedienteTecnico + Supervision + GestionProyecto + Capacitacion + Contingencias;
     }
 }
