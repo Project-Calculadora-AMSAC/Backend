@@ -6,10 +6,12 @@ using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Services;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Interfaces.Resources;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Interfaces.Transform;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Commands;
+using ProjectCalculadoraAMSAC.User.Infraestructure.Pipeline.Middleware.Attributes;
 
 namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Interfaces.Controllers;
 
 [ApiController]
+
 [Route("amsac/v1/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
 public class EstimacionController : ControllerBase

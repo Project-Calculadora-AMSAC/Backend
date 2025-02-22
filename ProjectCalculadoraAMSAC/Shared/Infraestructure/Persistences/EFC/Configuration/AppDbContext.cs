@@ -32,7 +32,7 @@ namespace ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Config
         public DbSet<ValorAtributoEstimacion> ValoresAtributosEstimacion { get; set; }
         public DbSet<UnidadDeMedida> UnidadesDeMedida { get; set; }
         public DbSet<CostoEstimado> CostoEstimados { get; set; }
-
+        public DbSet<AuthUserRefreshToken> AuthUsersRefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -53,6 +53,17 @@ namespace ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Config
                     .HasForeignKey(e => e.UsuarioId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
+            
+            builder.Entity<AuthUserRefreshToken>(refreshToken =>
+            {
+                refreshToken.HasKey(rt => rt.Id);
+
+                refreshToken.HasOne(rt => rt.AuthUser)
+                    .WithMany()
+                    .HasForeignKey(rt => rt.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
             
             // Configuración de la entidad Proyecto
             builder.Entity<Proyecto>(proyecto =>

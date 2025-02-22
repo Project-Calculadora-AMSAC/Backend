@@ -26,6 +26,13 @@ public class AuthUserRepository : BaseRepository<AuthUser>, IAuthUserRepository
             .FirstOrDefaultAsync(user => user.Email.Equals(email));
     }
 
+    // ✅ Implementación del nuevo método para buscar por Refresh Token
+    public async Task<AuthUser?> FindByRefreshTokenAsync(string refreshToken)
+    {
+        return await _context.AuthUsers
+            .Include(u => u.RefreshTokens) // Asegura que incluyes la relación con los tokens
+            .FirstOrDefaultAsync(u => u.RefreshTokens.Any(rt => rt.Token == refreshToken && rt.ExpiryDate > DateTime.UtcNow));
+    }
     /// <summary>
     /// Encuentra un usuario por su ID
     /// </summary>

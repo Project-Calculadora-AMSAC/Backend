@@ -135,6 +135,8 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("TokenSettings"));
 builder.Services.AddScoped<IAuthUserRepository, AuthUserRepository>();
+builder.Services.AddScoped<IAuthUserRefreshTokenRepository, AuthUserRefreshTokenRepository>();
+
 builder.Services.AddScoped<IAuthUserCommandService, AuthUserCommandService>();
 builder.Services.AddScoped<IAuthUserQueryService, AuthUserQueryService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
