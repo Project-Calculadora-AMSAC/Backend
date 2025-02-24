@@ -32,4 +32,10 @@ public class AuthUserRefreshTokenRepository : IAuthUserRefreshTokenRepository
         _context.AuthUsersRefreshTokens.Update(refreshToken);
         await _context.SaveChangesAsync();
     }
+    public async Task UpdateAsync(AuthUserRefreshToken refreshToken)
+    {
+        _context.AuthUsersRefreshTokens.Update(refreshToken);
+        await _context.SaveChangesAsync();
+    }
+
 }

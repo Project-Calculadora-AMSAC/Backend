@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Commands;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Queries;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Services;
-using ProjectCalculadoraAMSAC.User.Infraestructure.Pipeline.Middleware.Attributes;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Interfaces.Controllers;
 

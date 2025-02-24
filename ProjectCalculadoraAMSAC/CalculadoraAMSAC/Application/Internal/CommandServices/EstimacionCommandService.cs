@@ -32,7 +32,6 @@ public class EstimacionCommandService : IEstimacionCommandService
     if (command == null)
         throw new ArgumentException("Invalid estimation data.");
 
-    // ✅ Buscar TipoPam antes de crear la estimación
     var tipoPam = await _tipoPamRepository.GetByIdWithVariablesAsync(command.TipoPamId);
 
     if (tipoPam == null)
@@ -44,7 +43,6 @@ public class EstimacionCommandService : IEstimacionCommandService
         throw new InvalidOperationException($"El TipoPam con ID {command.TipoPamId} no tiene variables asignadas.");
     }
 
-    // ✅ Crear instancia de Estimacion
     var nuevaEstimacion = new Estimacion(
         command.UsuarioId,
         command.ProyectoId,
@@ -90,10 +88,8 @@ public class EstimacionCommandService : IEstimacionCommandService
             if (estimacion == null)
                 throw new Exception("Estimation not found.");
 
-            // ✅ Actualizar valores de la estimación
             estimacion.ActualizarValores(new Dictionary<int, string>(command.Valores));
 
-            // ✅ Obtener el costo asociado y recalcularlo
             var costoEstimado = await _costoEstimadoRepository.GetByEstimacionId(command.EstimacionId);
             if (costoEstimado != null)
             {
@@ -108,5 +104,17 @@ public class EstimacionCommandService : IEstimacionCommandService
             Console.WriteLine($"ERROR: {e.Message}");
             throw new Exception($"An error occurred while updating the estimation: {e.Message}");
         }
+    }
+
+    public async Task<bool> Handle(EliminarEstimacionCommand command)
+    {
+        var estimacion = await _estimacionRepository.FindByIdAsync(command.EstimacionId);
+        if (estimacion == null)
+            throw new Exception("Estimacion not found");
+
+        await _estimacionRepository.DeleteAsync(estimacion.EstimacionId);
+        await _unitOfWork.CompleteAsync();
+        return true; // Indica que la operación fue exitosa
+
     }
 }

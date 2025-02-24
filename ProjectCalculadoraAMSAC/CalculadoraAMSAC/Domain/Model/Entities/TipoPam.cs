@@ -9,17 +9,14 @@ public class TipoPam
     public string Name { get; set; }
     public bool Status { get; set; }
     
-    // ✅ Relación con `Estimaciones` (Un TipoPam puede tener múltiples estimaciones)
     [JsonIgnore]
 
     private readonly List<Estimacion> _estimaciones = new();
     [JsonIgnore]
 
     public IReadOnlyCollection<Estimacion> Estimaciones => _estimaciones.AsReadOnly();
-    // ✅ Relación con `AtributoPam` (Define qué atributos tiene cada TipoPam)
     private readonly List<AtributosPam> _atributos = new();
     public IReadOnlyCollection<AtributosPam> Atributos => _atributos.AsReadOnly();
-    // ✅ Relación con `VariablePam` (Constantes propias de cada TipoPam)
     private readonly List<VariablesPam> _variables = new();
     public IReadOnlyCollection<VariablesPam> Variables => _variables.AsReadOnly();
    
@@ -30,7 +27,6 @@ public class TipoPam
         Status = status;
     }
 
-    // ✅ Agregar un AtributoPam (Estructura, sin valores aún)
     public void AgregarAtributo(int unidadMedida,string nombre, string tipoDato)
     {
         if (_atributos.Any(a => a.Nombre == nombre))
@@ -39,7 +35,6 @@ public class TipoPam
         _atributos.Add(new AtributosPam(Id,unidadMedida, nombre, tipoDato));
     }
 
-    // ✅ Agregar una VariablePam (Constante del TipoPam)
     public void AgregarVariable(string nombre, decimal valor)
     {
         if (_variables.Any(v => v.Nombre == nombre))
@@ -48,7 +43,6 @@ public class TipoPam
         _variables.Add(new VariablesPam(Id, nombre, valor));
     }
 
-    // ✅ Agregar una Estimación (Cuando se crea una nueva estimación)
     public void AgregarEstimacion(Estimacion estimacion)
     {
         if (estimacion.TipoPamId != Id)

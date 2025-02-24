@@ -1,9 +1,11 @@
-﻿using System.Security.Cryptography;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
+using ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Configuration;
 using ProjectCalculadoraAMSAC.User.Application.Internal.OutboundServices;
 using ProjectCalculadoraAMSAC.User.Domain.Model.Aggregates;
 using ProjectCalculadoraAMSAC.User.Domain.Repositories;
@@ -15,13 +17,17 @@ namespace ProjectCalculadoraAMSAC.User.Infraestructure.Tokens.JWT.Services
     {
         private readonly TokenSettings _tokenSettings;
         private readonly IAuthUserRefreshTokenRepository _refreshTokenRepository;
+        private readonly AppDbContext _context; // 🔹 Agregamos el contexto de BD
 
         public TokenService(
             IOptions<TokenSettings> tokenSettings,
-            IAuthUserRefreshTokenRepository refreshTokenRepository) 
+            IAuthUserRefreshTokenRepository refreshTokenRepository,
+            AppDbContext context
+            ) 
         {
             _tokenSettings = tokenSettings?.Value ?? throw new ArgumentNullException(nameof(tokenSettings));
             _refreshTokenRepository = refreshTokenRepository ?? throw new ArgumentNullException(nameof(refreshTokenRepository));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         /// <summary>
@@ -30,51 +36,70 @@ namespace ProjectCalculadoraAMSAC.User.Infraestructure.Tokens.JWT.Services
         public string GenerateToken(AuthUser user)
         {
             var secret = _tokenSettings.Secret;
-            var key = Encoding.ASCII.GetBytes(secret);
+            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
+
+            var refreshToken = GenerateRefreshToken(); // Generamos el refresh token aquí mismo
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
                 {
                     new Claim(ClaimTypes.Sid, user.Id.ToString()),
-                    new Claim(ClaimTypes.Name, user.Email)
+                    new Claim(ClaimTypes.Name, user.Email),
+                    new Claim("refreshToken", refreshToken) // Guardamos el refresh token en el JWT
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(60), // Expira en 1 hora
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                Expires = DateTime.UtcNow.AddMinutes(30), // Expira en 1 minuto
+                SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
             };
-            var tokenHandler = new JsonWebTokenHandler();
-            return tokenHandler.CreateToken(tokenDescriptor);
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+    
+            // Guardamos el refresh token en la base de datos
+            StoreRefreshToken(user.Id, refreshToken).Wait();
+
+            return tokenHandler.WriteToken(token);
         }
+
+
         
         /// <summary>
         /// Validate the JWT token
         /// </summary>
-        public async Task<Guid?> ValidateToken(string token)
+        public Guid? ValidateToken(string token)
         {
             if (string.IsNullOrEmpty(token))
                 return null;
 
-            var tokenHandler = new JsonWebTokenHandler();
+            var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_tokenSettings.Secret);
+
             try
             {
-                var tokenValidationResult = await tokenHandler.ValidateTokenAsync(token, new TokenValidationParameters
+                var validationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
                     ValidateAudience = false,
+                    ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
-                });
+                };
 
-                var jwtToken = (JsonWebToken)tokenValidationResult.SecurityToken;
-                var userId = Guid.Parse(jwtToken.Claims.First(claim => claim.Type == ClaimTypes.Sid).Value);
-                return userId;
+                var principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+                var jwtToken = (JwtSecurityToken)validatedToken;
+
+                var userId = jwtToken.Claims.First(claim => claim.Type == ClaimTypes.Sid).Value;
+                return Guid.Parse(userId);
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"❌ Error en la validación del token: {ex.Message}");
                 return null;
             }
         }
+
+
 
         /// <summary>
         /// Generate a secure Refresh Token
@@ -94,15 +119,30 @@ namespace ProjectCalculadoraAMSAC.User.Infraestructure.Tokens.JWT.Services
         /// </summary>
         public async Task<Guid?> ValidateRefreshToken(Guid userId, string refreshToken)
         {
-            var storedToken = await _refreshTokenRepository.GetByTokenAsync(refreshToken);
+            var storedToken = await _refreshTokenRepository.GetByUserIdAsync(userId);
 
-            if (storedToken == null || storedToken.ExpiryDate < DateTime.UtcNow)
+            if (storedToken == null)
             {
-                return null; // Token no válido o expirado
+                Console.WriteLine($"⚠️ No se encontró un refresh token para el usuario {userId}.");
+                return null;
             }
 
+            if (storedToken.Token != refreshToken)
+            {
+                Console.WriteLine($"🚨 Refresh token inválido para el usuario {userId}.");
+                return null;
+            }
+
+            if (storedToken.ExpiryDate < DateTime.UtcNow)
+            {
+                Console.WriteLine($"⏳ El refresh token del usuario {userId} ha expirado.");
+                return null;
+            }
+
+            Console.WriteLine($"✅ Refresh token válido para el usuario {userId}.");
             return storedToken.UserId;
         }
+
 
         /// <summary>
         /// Store Refresh Token
@@ -115,6 +155,7 @@ namespace ProjectCalculadoraAMSAC.User.Infraestructure.Tokens.JWT.Services
             {
                 existingToken.Token = refreshToken;
                 existingToken.ExpiryDate = DateTime.UtcNow.AddDays(7);
+                await _refreshTokenRepository.UpdateAsync(existingToken); // Asegurar que se actualiza
             }
             else
             {
@@ -128,6 +169,11 @@ namespace ProjectCalculadoraAMSAC.User.Infraestructure.Tokens.JWT.Services
                 await _refreshTokenRepository.AddAsync(newRefreshToken);
             }
         }
+
+
+
+
+
 
         /// <summary>
         /// Revoke Refresh Token (Logout)

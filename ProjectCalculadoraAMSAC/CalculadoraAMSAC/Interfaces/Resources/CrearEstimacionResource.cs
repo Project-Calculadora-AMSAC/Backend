@@ -6,5 +6,6 @@ public class CrearEstimacionResource
     public int ProyectoId { get; set; }
     public int TipoPamId { get; set; }
     public string CodPam { get; set; }
+    public DateTime FechaEstimacion { get; set; }
     public IDictionary<int, string> Valores { get; set; } = new Dictionary<int, string>();
 }

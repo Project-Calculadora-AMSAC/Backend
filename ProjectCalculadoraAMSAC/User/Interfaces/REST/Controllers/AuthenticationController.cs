@@ -17,6 +17,7 @@ namespace ProjectCalculadoraAMSAC.User.Interfaces.REST.Controllers;
 [Produces(MediaTypeNames.Application.Json)]
 public class AuthenticationController(
     IAuthUserCommandService userCommandService,
+    IAuthUserRefreshTokenRepository authUserRefreshTokenRepository,
     IAuthUserRepository authUserRepository,
     ITokenService tokenService) : ControllerBase
 {
@@ -37,16 +38,16 @@ public class AuthenticationController(
             return Unauthorized(new { message = "Invalid credentials" });
         }
 
+        var jwtToken = tokenService.GenerateToken(user);
         var refreshToken = tokenService.GenerateRefreshToken();
 
         await tokenService.StoreRefreshToken(user.Id, refreshToken);
 
-        // Generar un nuevo token para resource
-        var resourceToken = tokenService.GenerateToken(user);
-        var resource = AuthenticatedUserResourceFromEntityAssembler.ToResourceFromEntity(user, resourceToken);
+        var resource = AuthenticatedUserResourceFromEntityAssembler.ToResourceFromEntity(user, jwtToken);
 
-        return Ok(new { refreshToken, resource });
+        return Ok(new { token = jwtToken, refreshToken, resource });
     }
+
 
 
     /**
@@ -80,27 +81,26 @@ public class AuthenticationController(
      */
     [HttpPost("refresh-token")]
     [AllowAnonymous]
+
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
     {
-        var user = await authUserRepository.FindByRefreshTokenAsync(request.RefreshToken);
-        if (user == null)
-        {
+        var storedToken = await authUserRefreshTokenRepository.GetByTokenAsync(request.RefreshToken);
+        if (storedToken == null || storedToken.ExpiryDate < DateTime.UtcNow)
             return Unauthorized(new { message = "Invalid or expired refresh token" });
-        }
 
-        var isValid = await tokenService.ValidateRefreshToken(user.Id, request.RefreshToken);
-        if (isValid == null)
-        {
-            return Unauthorized(new { message = "Invalid refresh token" });
-        }
+        var user = await authUserRepository.FindByIdAsync(storedToken.UserId);
+        if (user == null)
+            return Unauthorized(new { message = "User not found." });
 
-        var newAccessToken = tokenService.GenerateToken(user);
+        var newJwtToken = tokenService.GenerateToken(user);
         var newRefreshToken = tokenService.GenerateRefreshToken();
 
         await tokenService.StoreRefreshToken(user.Id, newRefreshToken);
 
-        return Ok(new { accessToken = newAccessToken, refreshToken = newRefreshToken });
+        return Ok(new { token = newJwtToken, refreshToken = newRefreshToken });
     }
+
+
 
     /**
      * <summary>

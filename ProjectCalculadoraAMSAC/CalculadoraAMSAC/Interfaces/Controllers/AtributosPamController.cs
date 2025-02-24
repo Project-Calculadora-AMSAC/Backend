@@ -1,15 +1,14 @@
 ﻿using System.Net.Mime;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Commands;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Queries;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Services;
-using ProjectCalculadoraAMSAC.User.Infraestructure.Pipeline.Middleware.Attributes;
 
 namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Interfaces.Controllers;
 
 [ApiController]
 [Authorize]
-
 [Route("amsac/v1/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
 public class AtributosPamController(IAtributoPamQueryService queryService, IAtributoPamCommandService commandService)

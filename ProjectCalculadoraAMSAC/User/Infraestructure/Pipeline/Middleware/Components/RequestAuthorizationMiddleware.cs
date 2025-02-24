@@ -39,7 +39,7 @@ public class RequestAuthorizationMiddleware(RequestDelegate next)
         if (token == null) throw new Exception("Null or invalid token");
 
         // validate token
-        var userId = await tokenService.ValidateToken(token);
+        var userId =  tokenService.ValidateToken(token);
 
         // if token is invalid then throw exception
         if (userId == null) throw new Exception("Invalid token");

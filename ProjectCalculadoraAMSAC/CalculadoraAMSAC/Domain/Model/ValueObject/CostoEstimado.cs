@@ -101,16 +101,16 @@ public class CostoEstimado
                 throw new InvalidOperationException($"El Tipo de PAM '{estimacion.TipoPam.Name}' no tiene una fórmula de cálculo definida.");
         }
 
-        GastosGenerales = CostoDirecto * 0.2m;
-        Utilidades = CostoDirecto * 0.09m;
+        GastosGenerales = CostoDirecto * 0.200989288758199m;
+        Utilidades = CostoDirecto * 0.0900000000203m;
         SubTotal = CostoDirecto + GastosGenerales + Utilidades;
         IGV = SubTotal * 0.18m;
         SubTotalObras = SubTotal + IGV;
-        ExpedienteTecnico = CostoDirecto * 0.061m;
-        Supervision = CostoDirecto * 0.148m;
-        GestionProyecto = CostoDirecto * 0.047m;
-        Capacitacion = CostoDirecto * 0.012m;
-        Contingencias = CostoDirecto * 0.059m;
+        ExpedienteTecnico = CostoDirecto * 0.0617399364388341m;
+        Supervision = CostoDirecto * 0.147885283929561m;
+        GestionProyecto = CostoDirecto * 0.047200000143723m;
+        Capacitacion = CostoDirecto * 0.0120887931329303m;
+        Contingencias = CostoDirecto * 0.0589999998802309m;
         TotalEstimado = SubTotalObras + ExpedienteTecnico + Supervision + GestionProyecto + Capacitacion + Contingencias;
     }
 }

@@ -9,7 +9,6 @@ namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Application.Internal.QuerySer
 public class EstimacionQueryService(IEstimacionRepository estimacionRepository) : IEstimacionQueryService
 {
  
-    // ✅ Obtener una única estimación por ID, incluyendo `CostoEstimado`, `Proyecto`, `TipoPam` y `Valores`
     public async Task<Estimacion?> Handle(GetEstimacionByIdQuery query)
     {
         return await estimacionRepository
@@ -21,7 +20,6 @@ public class EstimacionQueryService(IEstimacionRepository estimacionRepository) 
             .FirstOrDefaultAsync(e => e.EstimacionId == query.EstimacionId);
     }
 
-    // ✅ Obtener todas las estimaciones incluyendo `CostoEstimado`, `Proyecto`, `TipoPam` y `Valores`
     public async Task<IEnumerable<Estimacion>> Handle(GetAllEstimacionesQuery query)
     {
         return await estimacionRepository
@@ -33,7 +31,6 @@ public class EstimacionQueryService(IEstimacionRepository estimacionRepository) 
             .ToListAsync();
     }
     
-    // ✅ Obtener el costo total de todas las estimaciones de un proyecto
     public async Task<decimal?> Handle(GetTotalCostByProjectIdQuery query)
     {
         return await estimacionRepository
@@ -71,7 +68,7 @@ public class EstimacionQueryService(IEstimacionRepository estimacionRepository) 
             .Include(e => e.Proyecto)
             .Include(e => e.TipoPam)
             .Include(e => e.Valores)
-            .Where(e => e.TipoPamId == query.TipoPamId && e.ProyectoId == query.ProyectoId) // ✅ Corrección aquí
+            .Where(e => e.TipoPamId == query.TipoPamId && e.ProyectoId == query.ProyectoId) 
             .ToListAsync();
     }
 }

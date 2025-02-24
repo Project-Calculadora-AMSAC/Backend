@@ -8,4 +8,5 @@ public interface IAuthUserRefreshTokenRepository
     Task<AuthUserRefreshToken?> GetByUserIdAsync(Guid userId);
     Task AddAsync(AuthUserRefreshToken refreshToken);
     Task RevokeAsync(AuthUserRefreshToken refreshToken);
+    Task UpdateAsync(AuthUserRefreshToken refreshToken);
 }

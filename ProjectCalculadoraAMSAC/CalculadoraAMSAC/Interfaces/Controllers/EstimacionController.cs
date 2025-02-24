@@ -6,12 +6,12 @@ using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Services;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Interfaces.Resources;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Interfaces.Transform;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Commands;
-using ProjectCalculadoraAMSAC.User.Infraestructure.Pipeline.Middleware.Attributes;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Interfaces.Controllers;
 
 [ApiController]
-
+[Authorize]
 [Route("amsac/v1/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
 public class EstimacionController : ControllerBase
@@ -39,6 +39,7 @@ public class EstimacionController : ControllerBase
             EstimacionId = estimacion.EstimacionId,
             UsuarioId = estimacion.UsuarioId,
             CodPam = estimacion.CodPam,
+            FechaPam = estimacion.FechaEstimacion,
             Proyecto = estimacion.Proyecto,
             TipoPam = estimacion.TipoPam,
             Valores = estimacion.Valores,
@@ -75,6 +76,7 @@ public class EstimacionController : ControllerBase
             EstimacionId = estimacion.EstimacionId,
             UsuarioId = estimacion.UsuarioId,
             Proyecto = estimacion.Proyecto,
+            FechaPam = estimacion.FechaEstimacion,
             TipoPam = estimacion.TipoPam,
             Valores = estimacion.Valores,
             CostoEstimado = estimacion.CostoEstimado != null ? new
@@ -199,5 +201,14 @@ public async Task<IActionResult> CreateEstimacion([FromBody] CrearEstimacionReso
             return NotFound("No estimaciones found with the given filters.");
 
         return Ok(estimaciones);
+    }
+    
+    [HttpDelete("delete/{id}")]
+    public async Task<IActionResult> DeleteEstimacion([FromRoute] int id)
+    {
+        var eliminarEstimacionCommand = new EliminarEstimacionCommand(id);
+        var result = await _commandService.Handle(eliminarEstimacionCommand);
+        if (!result) return BadRequest();
+        return NoContent();
     }
 }

@@ -16,6 +16,7 @@ public class CrearEstimacionTransform
             resource.ProyectoId,
             resource.TipoPamId,
             resource.CodPam,
+            resource.FechaEstimacion = DateTime.UtcNow, 
             new Dictionary<int, string>(resource.Valores) // ✅ Solo los valores, los costos se calculan después
         );
     }

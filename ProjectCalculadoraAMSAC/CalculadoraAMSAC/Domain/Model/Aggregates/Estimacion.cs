@@ -16,7 +16,6 @@ public class Estimacion
     public string CodPam { get; private set; } // Código único por estimación
     public DateTime FechaEstimacion { get; private set; }
 
-    // ✅ Relación con `AtributoEstimacion`
     private readonly List<ValorAtributoEstimacion> _valores  = new(); 
     public IReadOnlyCollection<ValorAtributoEstimacion> Valores => _valores.AsReadOnly();
 
@@ -36,7 +35,6 @@ public class Estimacion
         if (valores == null)
             throw new ArgumentNullException(nameof(valores), "Los valores no pueden ser null.");
 
-        // ✅ Guardar los valores dinámicos en `AtributoEstimacion`
         foreach (var (atributoPamId, valor) in valores)
         {
             _valores.Add(new ValorAtributoEstimacion(EstimacionId, atributoPamId, valor));
@@ -44,7 +42,6 @@ public class Estimacion
 
         Console.WriteLine($"DEBUG: Creando Estimacion con ID (antes de guardar en DB): {EstimacionId}");
 
-        // 🔴 Importante: No se debe crear `CostoEstimado` aquí, porque `EstimacionId` es 0 en este punto.
     }
 
 

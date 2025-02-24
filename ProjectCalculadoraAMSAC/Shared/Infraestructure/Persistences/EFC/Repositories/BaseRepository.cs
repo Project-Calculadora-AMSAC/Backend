@@ -20,7 +20,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
         await Context.SaveChangesAsync();
     }
 
-    public async Task<TEntity?> FindByIdAsync(Guid id)
+    public async Task<TEntity?> FindByIdAsync(int id)
     {
         return await Context.Set<TEntity>().FindAsync(id);
     }
@@ -41,7 +41,7 @@ public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where T
     {
         Context.Set<TEntity>().Remove(entity);
     }
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(int id)
     {
         var entity = await FindByIdAsync(id);
         if (entity == null) return;

@@ -6,4 +6,5 @@ public interface IEstimacionCommandService
 {
     Task<int> Handle(CrearEstimacionCommand command);
     Task<bool> Handle(ActualizarEstimacionCommand command);
+    Task<bool> Handle(EliminarEstimacionCommand command);
 }
