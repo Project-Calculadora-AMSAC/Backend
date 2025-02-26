@@ -4,6 +4,6 @@ namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Services;
 
 public interface IValorAtributoEstimacionCommandService
 {
-    Task<int> Handle(CrearValorAtributoEstimacionCommand command);
+    Task<int> Handle(CrearValorAtributoSubEstimacionCommand command);
     Task<bool> Handle(ActualizarValorAtributoEstimacionCommand command);
 }

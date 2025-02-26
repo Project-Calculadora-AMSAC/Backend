@@ -19,7 +19,7 @@ public class ValorAtributoEstimacionCommandService : IValorAtributoEstimacionCom
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<int> Handle(CrearValorAtributoEstimacionCommand command)
+    public async Task<int> Handle(CrearValorAtributoSubEstimacionCommand command)
     {
         if (command == null)
         {
@@ -27,7 +27,7 @@ public class ValorAtributoEstimacionCommandService : IValorAtributoEstimacionCom
         }
 
         var nuevoValorAtributo = new ValorAtributoEstimacion(
-            command.EstimacionId,
+            command.SubEstimacionId,
             command.AtributoPamId,
             command.Valor
         );

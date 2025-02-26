@@ -33,6 +33,7 @@ namespace ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Config
         public DbSet<UnidadDeMedida> UnidadesDeMedida { get; set; }
         public DbSet<CostoEstimado> CostoEstimados { get; set; }
         public DbSet<AuthUserRefreshToken> AuthUsersRefreshTokens { get; set; }
+        public DbSet<SubEstimacion> SubEstimaciones { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -85,7 +86,7 @@ namespace ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Config
                 tipoPam.Property(tp => tp.Name).IsRequired().HasMaxLength(255);
                 tipoPam.Property(tp => tp.Status).IsRequired().HasDefaultValue(true);
                 
-                tipoPam.HasMany(tp => tp.Estimaciones)
+                tipoPam.HasMany(tp => tp.SubEstimaciones)
                     .WithOne(e => e.TipoPam)
                     .HasForeignKey(e => e.TipoPamId)
                     .OnDelete(DeleteBehavior.Restrict);
@@ -125,26 +126,44 @@ namespace ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Config
                     .IsUnique()
                     .HasDatabaseName("IX_Estimacion_CodPam");
 
-              
+                // ✅ Relación con `Proyecto`
                 estimacion.HasOne(e => e.Proyecto)
                     .WithMany(p => p.Estimaciones)
                     .HasForeignKey(e => e.ProyectoId)
                     .OnDelete(DeleteBehavior.Cascade);
 
-                estimacion.HasOne(e => e.TipoPam)
-                    .WithMany(t => t.Estimaciones)
-                    .HasForeignKey(e => e.TipoPamId)
-                    .OnDelete(DeleteBehavior.Cascade);
+                // 🚨 🔴 Se elimina la relación con `TipoPam` porque ahora `SubEstimacion` tiene esa referencia
+                // 🚨 🔴 Se elimina la relación con `Valores`, ya que ahora `Valores` pertenece a `SubEstimacion`
 
-                estimacion.HasMany(e => e.Valores)
-                    .WithOne(v => v.Estimacion)
-                    .HasForeignKey(v => v.EstimacionId)
-                    .OnDelete(DeleteBehavior.Cascade);
-                estimacion.HasOne(e => e.CostoEstimado)
-                    .WithOne(c => c.Estimacion)
-                    .HasForeignKey<CostoEstimado>(c => c.EstimacionId)
-                    .OnDelete(DeleteBehavior.Cascade); // Si se borra la estimación, se borra su costo
+                // ✅ Nueva relación con `SubEstimaciones`
+                estimacion.HasMany(e => e.SubEstimaciones)
+                    .WithOne(s => s.Estimacion)
+                    .HasForeignKey(s => s.EstimacionId)
+                    .OnDelete(DeleteBehavior.Cascade); // Si se borra la estimación, se borran sus subestimaciones
+
+             
+                
             });
+            
+            builder.Entity<SubEstimacion>(subEstimacion =>
+            {
+                subEstimacion.HasKey(se => se.Id);
+
+                subEstimacion.HasOne(se => se.TipoPam)
+                    .WithMany()
+                    .HasForeignKey(se => se.TipoPamId)
+                    .OnDelete(DeleteBehavior.Restrict);
+    
+                subEstimacion.HasMany(se => se.Valores)
+                    .WithOne(v => v.SubEstimacion)
+                    .HasForeignKey(v => v.SubEstimacionId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                subEstimacion.HasOne(se => se.CostoEstimado)
+                    .WithOne(c => c.SubEstimacion)
+                    .HasForeignKey<CostoEstimado>(c => c.SubEstimacionId);
+            });
+
+
             
             builder.Entity<CostoEstimado>(costo =>
             {
@@ -163,9 +182,9 @@ namespace ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Config
                 costo.Property(c => c.TotalEstimado).HasColumnType("decimal(18,2)");
 
                 // ✅ Relación con Estimación
-                costo.HasOne(c => c.Estimacion)
+                costo.HasOne(c => c.SubEstimacion)
                     .WithOne(e => e.CostoEstimado)
-                    .HasForeignKey<CostoEstimado>(c => c.EstimacionId);
+                    .HasForeignKey<CostoEstimado>(c => c.SubEstimacionId);
             });
             
             // Configuración de la entidad `AtributoEstimacion`
@@ -174,9 +193,9 @@ namespace ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Config
                 valor.HasKey(v => v.Id);
                 valor.Property(v => v.Valor).IsRequired();
 
-                valor.HasOne(v => v.Estimacion)
+                valor.HasOne(v => v.SubEstimacion)
                     .WithMany(e => e.Valores)
-                    .HasForeignKey(v => v.EstimacionId)
+                    .HasForeignKey(v => v.SubEstimacionId)
                     .OnDelete(DeleteBehavior.Cascade);
 
                 valor.HasOne(v => v.AtributoPam)

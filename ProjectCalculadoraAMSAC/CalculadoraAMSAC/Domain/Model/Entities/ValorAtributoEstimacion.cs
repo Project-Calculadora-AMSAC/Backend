@@ -6,10 +6,10 @@ namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Entities;
 public class ValorAtributoEstimacion
 {
     public int Id { get;  set; }
-    public int EstimacionId { get;  set; }
+    public int SubEstimacionId { get;  set; }
     [JsonIgnore]
 
-    public Estimacion Estimacion { get;  set; }
+    public SubEstimacion SubEstimacion { get;  set; }
 
     public int AtributoPamId { get;  set; }
     public AtributosPam AtributoPam { get;  set; }
@@ -18,9 +18,9 @@ public class ValorAtributoEstimacion
 
     private ValorAtributoEstimacion() { }
 
-    public ValorAtributoEstimacion(int estimacionId, int atributoPamId, string valor)
+    public ValorAtributoEstimacion(int subEstimacionId, int atributoPamId, string valor)
     {
-        EstimacionId = estimacionId;
+        SubEstimacionId = subEstimacionId;
         AtributoPamId = atributoPamId;
         Valor = valor ?? throw new ArgumentNullException(nameof(valor));
     }

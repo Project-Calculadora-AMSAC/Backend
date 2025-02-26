@@ -14,9 +14,9 @@ public class ValorAtributoEstimacionQueryService : IValorAtributoEstimacionQuery
         _valorAtributoEstimacionRepository = valorAtributoEstimacionRepository;
     }
 
-    public async Task<IEnumerable<ValorAtributoEstimacion>> Handle(GetAllValoresAtributoEstimacionQuery query)
+    public async Task<IEnumerable<ValorAtributoEstimacion>> Handle(GetAllValoresAtributoSubEstimacionQuery query)
     {
-        return await _valorAtributoEstimacionRepository.GetAllByEstimacionIdAsync(query.EstimacionId);
+        return await _valorAtributoEstimacionRepository.GetAllBySubEstimacionIdAsync(query.SubEstimacionId);
     }
 
     public async Task<ValorAtributoEstimacion?> Handle(GetValorAtributoEstimacionByIdQuery query)

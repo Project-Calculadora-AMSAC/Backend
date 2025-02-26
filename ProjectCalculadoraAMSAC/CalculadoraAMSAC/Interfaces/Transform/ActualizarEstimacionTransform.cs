@@ -5,8 +5,15 @@ namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Interfaces.Transform;
 
 public class ActualizarEstimacionTransform
 {
-    public static ActualizarEstimacionCommand ToCommand(int estimacionId, ActualizarEstimacionResource resource)
+    public static ActualizarEstimacionCommand ToCommand(ActualizarEstimacionResource resource)
     {
-        return new ActualizarEstimacionCommand(estimacionId, resource.Valores);
+        var subEstimaciones = resource.SubEstimaciones
+            .Select(se => new ActualizarSubEstimacionCommand(se.SubEstimacionId,se.TipoPamId ,se.Cantidad, se.Valores))
+            .ToList();
+
+        return new ActualizarEstimacionCommand(
+            resource.EstimacionId,
+            subEstimaciones // ✅ Ahora se pasa la lista de subestimaciones
+        );
     }
 }

@@ -18,15 +18,15 @@ public class ValorAtributoEstimacionRepository : BaseRepository<ValorAtributoEst
     public async Task<ValorAtributoEstimacion?> GetByIdAsync(int id)
     {
         return await _context.ValoresAtributosEstimacion
-            .Include(v => v.Estimacion)
+            .Include(v => v.SubEstimacion)
             .Include(v => v.AtributoPam)
             .FirstOrDefaultAsync(v => v.Id == id);
     }
 
-    public async Task<List<ValorAtributoEstimacion>> GetAllByEstimacionIdAsync(int estimacionId)
+    public async Task<List<ValorAtributoEstimacion>> GetAllBySubEstimacionIdAsync(int subEstimacionId)
     {
         return await _context.ValoresAtributosEstimacion
-            .Where(v => v.EstimacionId == estimacionId)
+            .Where(v => v.SubEstimacionId == subEstimacionId)
             .Include(v => v.AtributoPam)
             .ToListAsync();
     }

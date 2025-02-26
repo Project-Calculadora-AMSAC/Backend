@@ -23,6 +23,6 @@ public class CostoEstimadoRepository : ICostoEstimadoRepository
     public async Task<CostoEstimado> GetByEstimacionId(int estimacionId)
     {
         return await _context.CostoEstimados
-            .FirstOrDefaultAsync(c => c.EstimacionId == estimacionId);
+            .FirstOrDefaultAsync(c => c.SubEstimacionId == estimacionId);
     }
 }

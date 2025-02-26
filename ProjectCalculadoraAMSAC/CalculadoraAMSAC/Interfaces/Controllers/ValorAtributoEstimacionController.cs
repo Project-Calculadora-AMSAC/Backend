@@ -9,7 +9,6 @@ namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Interfaces.Controllers;
 
 [ApiController]
 [Authorize]
-
 [Route("amsac/v1/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
 public class ValorAtributoEstimacionController(
@@ -17,19 +16,19 @@ public class ValorAtributoEstimacionController(
     IValorAtributoEstimacionCommandService commandService)
     : ControllerBase
 {
-   
-    [HttpGet("estimacion/{estimacionId}")]
-    public async Task<IActionResult> GetAllByEstimacionId(int estimacionId)
+    // ✅ Obtener todos los valores de una SubEstimación
+    [HttpGet("subestimacion/{subEstimacionId}")]
+    public async Task<IActionResult> GetAllBySubEstimacionId(int subEstimacionId)
     {
-        var query = new GetAllValoresAtributoEstimacionQuery(estimacionId);
+        var query = new GetAllValoresAtributoSubEstimacionQuery(subEstimacionId);
         var valores = await queryService.Handle(query);
 
-        if (valores is null || !valores.Any()) return NotFound("No values found for the given EstimacionId.");
+        if (valores is null || !valores.Any()) return NotFound("No values found for the given SubEstimacionId.");
 
         return Ok(valores);
     }
 
-
+    // ✅ Obtener un valor por ID
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -41,8 +40,9 @@ public class ValorAtributoEstimacionController(
         return Ok(valor);
     }
 
+    // ✅ Crear un nuevo valor para una SubEstimación
     [HttpPost("createValorAtributoEstimacion")]
-    public async Task<IActionResult> Create([FromBody] CrearValorAtributoEstimacionCommand command)
+    public async Task<IActionResult> Create([FromBody] CrearValorAtributoSubEstimacionCommand command)
     {
         if (command == null) return BadRequest("Invalid input.");
 
@@ -54,7 +54,7 @@ public class ValorAtributoEstimacionController(
         return CreatedAtAction(nameof(GetById), new { id }, valor);
     }
 
-  
+    // ✅ Actualizar un valor de una SubEstimación
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] ActualizarValorAtributoEstimacionCommand command)
     {
@@ -65,6 +65,4 @@ public class ValorAtributoEstimacionController(
 
         return NoContent();
     }
-
-   
 }

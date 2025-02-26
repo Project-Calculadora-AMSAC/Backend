@@ -14,11 +14,11 @@ public class CostoEstimado
     [Key]
     public int Id { get; private set; }
 
-    public int EstimacionId { get; private set; }
+    public int SubEstimacionId { get; private set; }
 
-    [ForeignKey("EstimacionId")]
+    [ForeignKey("SubEstimacionId")]
     [JsonIgnore]
-    public Estimacion Estimacion { get; private set; }
+    public SubEstimacion SubEstimacion { get; private set; }
 
     public decimal CostoDirecto { get; private set; }
     public decimal GastosGenerales { get; private set; }
@@ -35,25 +35,32 @@ public class CostoEstimado
 
     private CostoEstimado() { }
 
-    public CostoEstimado(Estimacion estimacion)
+    public CostoEstimado(SubEstimacion subEstimacion)
     {
-        if (estimacion.TipoPam == null)
+        if (subEstimacion == null)
         {
-            Console.WriteLine($"ERROR: `TipoPam` en la estimación {estimacion.EstimacionId} es NULL.");
-            throw new InvalidOperationException($"No hay un TipoPam asignado a la estimación con ID {estimacion.EstimacionId}.");
+            Console.WriteLine("ERROR: `subEstimacion` es NULL.");
+            throw new ArgumentNullException(nameof(subEstimacion), "La subestimación no puede ser null.");
         }
 
-        if (estimacion.TipoPam.Variables == null || !estimacion.TipoPam.Variables.Any())
+        if (subEstimacion.TipoPam == null)
         {
-            Console.WriteLine($"ERROR: TipoPam {estimacion.TipoPam.Id} no tiene variables cargadas.");
-            throw new InvalidOperationException($"El TipoPam con ID {estimacion.TipoPam.Id} no tiene variables asignadas.");
+            Console.WriteLine($"ERROR: `TipoPam` en la subestimación {subEstimacion.Id} es NULL.");
+            throw new InvalidOperationException($"No hay un TipoPam asignado a la subestimación con ID {subEstimacion.Id}.");
         }
 
-        Console.WriteLine($"DEBUG: Creando `CostoEstimado` para estimación ID {estimacion.EstimacionId}");
+        if (subEstimacion.TipoPam.Variables == null || !subEstimacion.TipoPam.Variables.Any())
+        {
+            Console.WriteLine($"ERROR: TipoPam {subEstimacion.TipoPam.Id} no tiene variables cargadas.");
+            throw new InvalidOperationException($"El TipoPam con ID {subEstimacion.TipoPam.Id} no tiene variables asignadas.");
+        }
 
-        EstimacionId = estimacion.EstimacionId;
-        CalcularCostos(estimacion);
+        Console.WriteLine($"DEBUG: Creando `CostoEstimado` para subestimación ID {subEstimacion.Id}");
+
+        SubEstimacionId = subEstimacion.Id;
+        CalcularCostos(subEstimacion);
     }
+
 
     private decimal ParseDecimal(string input)
     {
@@ -61,17 +68,33 @@ public class CostoEstimado
         return decimal.Parse(input.Replace(",", "."), CultureInfo.InvariantCulture);
     }
 
-    public void CalcularCostos(Estimacion estimacion)
+    public void CalcularCostos(SubEstimacion subEstimacion)
     {
-        if (estimacion.Valores == null || !estimacion.Valores.Any())
+    
+        if (subEstimacion == null)
         {
-            throw new InvalidOperationException($"No hay valores asignados a la estimación ID {estimacion.EstimacionId}.");
+            Console.WriteLine("ERROR: `subEstimacion` en `CalcularCostos` es NULL.");
+            throw new ArgumentNullException(nameof(subEstimacion), "La subestimación no puede ser null.");
         }
-        
-        var variables = estimacion.TipoPam.Variables.ToDictionary(v => v.Nombre, v => v.Valor);
-        var atributos = estimacion.Valores.ToDictionary(v => v.AtributoPam.Nombre, v => v.Valor);
-        
-        Console.WriteLine($"DEBUG: CostoEstimado -> Estimación ID: {estimacion.EstimacionId}, Valores: {atributos.Count}");
+
+        if (subEstimacion.Valores == null || !subEstimacion.Valores.Any())
+        {
+            Console.WriteLine($"ERROR: `Valores` en subestimación ID {subEstimacion.Id} es NULL o vacío.");
+            throw new InvalidOperationException($"No hay valores en la subestimación ID {subEstimacion.Id}.");
+        }
+
+        if (subEstimacion.TipoPam == null)
+        {
+            Console.WriteLine($"ERROR: `TipoPam` en subestimación ID {subEstimacion.Id} es NULL.");
+            throw new InvalidOperationException($"No hay TipoPam en la subestimación ID {subEstimacion.Id}.");
+        }
+
+        Console.WriteLine($"DEBUG: Calculando costos para SubEstimacion ID {subEstimacion.Id}");
+
+        var variables = subEstimacion.TipoPam.Variables.ToDictionary(v => v.Nombre, v => v.Valor);
+        var atributos = subEstimacion.Valores.ToDictionary(v => v.AtributoPam.Nombre, v => v.Valor);
+
+        Console.WriteLine($"DEBUG: CostoEstimado -> SubEstimacion ID: {subEstimacion.Id}, Valores: {atributos.Count}");
 
         CostoDirecto = 0;
 
@@ -82,7 +105,7 @@ public class CostoEstimado
         bool cobertura = atributos.ContainsKey("Cobertura") && atributos["Cobertura"] == "true";
         string tipoCobertura = atributos.ContainsKey("TipoCobertura") ? atributos["TipoCobertura"] : "NINGUNA";
 
-        switch (estimacion.TipoPam.Name)
+        switch (subEstimacion.TipoPam.Name)
         {
             case "Desmonte de Mina":
                 CostoDirecto =
@@ -98,7 +121,7 @@ public class CostoEstimado
                 break;
 
             default:
-                throw new InvalidOperationException($"El Tipo de PAM '{estimacion.TipoPam.Name}' no tiene una fórmula de cálculo definida.");
+                throw new InvalidOperationException($"El Tipo de PAM '{subEstimacion.TipoPam.Name}' no tiene una fórmula de cálculo definida.");
         }
 
         GastosGenerales = CostoDirecto * 0.200989288758199m;

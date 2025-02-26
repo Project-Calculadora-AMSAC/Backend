@@ -6,5 +6,5 @@ namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Repositories;
 public interface IValorAtributoEstimacionRepository : IBaseRepository<ValorAtributoEstimacion>
 {
     Task<ValorAtributoEstimacion?> GetByIdAsync(int id);
-    Task<List<ValorAtributoEstimacion>> GetAllByEstimacionIdAsync(int estimacionId);
+    Task<List<ValorAtributoEstimacion>> GetAllBySubEstimacionIdAsync(int subEstimacionId);
 }

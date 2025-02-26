@@ -5,6 +5,6 @@ namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Services;
 
 public interface IValorAtributoEstimacionQueryService
 {
-    Task<IEnumerable<ValorAtributoEstimacion>> Handle(GetAllValoresAtributoEstimacionQuery query);
+    Task<IEnumerable<ValorAtributoEstimacion>> Handle(GetAllValoresAtributoSubEstimacionQuery query);
     Task<ValorAtributoEstimacion?> Handle(GetValorAtributoEstimacionByIdQuery query);
 }

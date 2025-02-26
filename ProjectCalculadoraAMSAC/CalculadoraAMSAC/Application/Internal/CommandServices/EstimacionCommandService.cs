@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿﻿using Microsoft.EntityFrameworkCore;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Aggregates;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Commands;
 using ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Model.Entities;
@@ -11,74 +11,74 @@ namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Application.Internal.CommandS
 public class EstimacionCommandService : IEstimacionCommandService
 {
     private readonly IEstimacionRepository _estimacionRepository;
+    private readonly ISubEstimacionRepository _subEstimacionRepository;
     private readonly ICostoEstimadoRepository _costoEstimadoRepository;
     private readonly ITipoPamRepository _tipoPamRepository;
     private readonly IUnitOfWork _unitOfWork;
 
     public EstimacionCommandService(
         IEstimacionRepository estimacionRepository,
+        ISubEstimacionRepository subEstimacionRepository,
         ITipoPamRepository tipoPamRepository,
-        ICostoEstimadoRepository costoEstimadoRepository,
         IUnitOfWork unitOfWork)
     {
         _estimacionRepository = estimacionRepository;
+        _subEstimacionRepository = subEstimacionRepository;
         _tipoPamRepository = tipoPamRepository;
-        _costoEstimadoRepository = costoEstimadoRepository;
         _unitOfWork = unitOfWork;
     }
 
-  public async Task<int> Handle(CrearEstimacionCommand command)
-{
-    if (command == null)
-        throw new ArgumentException("Invalid estimation data.");
-
-    var tipoPam = await _tipoPamRepository.GetByIdWithVariablesAsync(command.TipoPamId);
-
-    if (tipoPam == null)
-        throw new InvalidOperationException($"No se encontró el TipoPam con ID {command.TipoPamId}.");
-
-    if (tipoPam.Variables == null || !tipoPam.Variables.Any())
+    public async Task<int> Handle(CrearEstimacionCommand command)
     {
-        Console.WriteLine($"ERROR: TipoPam {command.TipoPamId} no tiene variables asignadas.");
-        throw new InvalidOperationException($"El TipoPam con ID {command.TipoPamId} no tiene variables asignadas.");
-    }
+        if (command == null)
+            throw new ArgumentException("Invalid estimation data.");
 
-    var nuevaEstimacion = new Estimacion(
-        command.UsuarioId,
-        command.ProyectoId,
-        tipoPam.Id,
-        command.CodPam,
-        command.Valores
-    );
+        var nuevaEstimacion = new Estimacion(
+            command.UsuarioId,
+            command.ProyectoId,
+            command.CodPam,
+            DateTime.UtcNow
+        );
 
-    try
-    {
-        // ✅ Guardar la estimación antes de calcular costos
+        var subEstimaciones = new List<SubEstimacion>();
+
+        foreach (var subCommand in command.SubEstimaciones)
+        {
+            var tipoPam = await _tipoPamRepository.GetByIdWithVariablesAsync(subCommand.TipoPamId);
+            if (tipoPam == null)
+                throw new InvalidOperationException($"No se encontró el TipoPam con ID {subCommand.TipoPamId}.");
+
+            var subEstimacion = new SubEstimacion(tipoPam.Id, subCommand.Cantidad, subCommand.Valores);
+            subEstimaciones.Add(subEstimacion);
+        }
+
+        // ✅ Guardar la estimación antes de asignar `SubEstimacion`
         await _estimacionRepository.AddAsync(nuevaEstimacion);
-        await _unitOfWork.CompleteAsync();  // Esto garantiza que la estimación tenga un ID
-
-        Console.WriteLine($"DEBUG: Estimación guardada con ID {nuevaEstimacion.EstimacionId}");
-
-        // ✅ Recuperar la estimación desde la BD para asegurarse de que tiene el ID y las relaciones correctas
-        var estimacionGuardada = await _estimacionRepository.GetByIdAsync(nuevaEstimacion.EstimacionId);
-        if (estimacionGuardada == null)
-            throw new Exception($"No se pudo recuperar la estimación con ID {nuevaEstimacion.EstimacionId}.");
-
-        Console.WriteLine($"DEBUG: Estimación recuperada con ID {estimacionGuardada.EstimacionId} y TipoPam {estimacionGuardada.TipoPam?.Name}");
-
-        // ✅ Crear `CostoEstimado` basado en la estimación guardada
-        var costoEstimado = new CostoEstimado(estimacionGuardada);
-        await _costoEstimadoRepository.AddAsync(costoEstimado);
         await _unitOfWork.CompleteAsync();
 
-        return estimacionGuardada.EstimacionId;
+        // ✅ Ahora que `nuevaEstimacion` tiene ID, se asignan las `SubEstimaciones`
+        foreach (var subEstimacion in subEstimaciones)
+        {
+            subEstimacion.SetEstimacion(nuevaEstimacion);
+            await _subEstimacionRepository.AddAsync(subEstimacion);
+        }
+    
+        await _unitOfWork.CompleteAsync();
+
+        // ✅ Ahora asignar `CostoEstimado` porque `SubEstimacion` ya tiene ID
+        foreach (var subEstimacion in subEstimaciones)
+        {
+            var costoEstimado = new CostoEstimado(subEstimacion);
+            await _costoEstimadoRepository.AddAsync(costoEstimado);
+        }
+
+        await _unitOfWork.CompleteAsync();
+
+        return nuevaEstimacion.EstimacionId;
     }
-    catch (Exception e)
-    {
-        Console.WriteLine($"ERROR: {e.Message}");
-        throw new Exception($"An error occurred while creating the estimation: {e.Message}");
-    }
-}
+
+
+
 
     public async Task<bool> Handle(ActualizarEstimacionCommand command)
     {
@@ -88,15 +88,17 @@ public class EstimacionCommandService : IEstimacionCommandService
             if (estimacion == null)
                 throw new Exception("Estimation not found.");
 
-            estimacion.ActualizarValores(new Dictionary<int, string>(command.Valores));
-
-            var costoEstimado = await _costoEstimadoRepository.GetByEstimacionId(command.EstimacionId);
-            if (costoEstimado != null)
+            // Actualizar subestimaciones
+            foreach (var subCommand in command.SubEstimaciones)
             {
-                costoEstimado.CalcularCostos(estimacion);
-                await _unitOfWork.CompleteAsync();
+                var subEstimacion = estimacion.SubEstimaciones.FirstOrDefault(se => se.Id == subCommand.SubEstimacionId);
+                if (subEstimacion != null)
+                {
+                    subEstimacion.Cantidad = subCommand.Cantidad;
+                }
             }
 
+            await _unitOfWork.CompleteAsync();
             return true;
         }
         catch (Exception e)
@@ -114,7 +116,6 @@ public class EstimacionCommandService : IEstimacionCommandService
 
         await _estimacionRepository.DeleteAsync(estimacion.EstimacionId);
         await _unitOfWork.CompleteAsync();
-        return true; // Indica que la operación fue exitosa
-
+        return true;
     }
 }

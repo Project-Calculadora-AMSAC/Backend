@@ -163,7 +163,9 @@ builder.Services.AddScoped<IVariablesPamQueryService, VariablesPamQueryService>(
 builder.Services.AddScoped<IValorAtributoEstimacionQueryService, ValorAtributoEstimacionQueryService>();
 builder.Services.AddScoped<IValorAtributoEstimacionCommandService, ValorAtributoEstimacionCommandService>();
 builder.Services.AddScoped<IValorAtributoEstimacionRepository, ValorAtributoEstimacionRepository>();
-
+builder.Services.AddScoped<ISubEstimacionRepository, SubEstimacionRepository>();
+builder.Services.AddScoped<ISubEstimacionCommandService, SubEstimacionCommandService>();
+builder.Services.AddScoped<ISubEstimacionQueryService, SubEstimacionQueryService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICostoEstimadoRepository, CostoEstimadoRepository>();
 

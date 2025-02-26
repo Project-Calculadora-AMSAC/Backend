@@ -4,8 +4,7 @@ public class CrearEstimacionResource
 {
     public Guid UsuarioId { get; set; }
     public int ProyectoId { get; set; }
-    public int TipoPamId { get; set; }
     public string CodPam { get; set; }
-    public DateTime FechaEstimacion { get; set; }
-    public IDictionary<int, string> Valores { get; set; } = new Dictionary<int, string>();
+    public List<SubEstimacionResource> SubEstimaciones { get; set; } // ✅ Nueva estructura
 }
+
