@@ -1,4 +1,5 @@
-﻿using ProjectCalculadoraAMSAC.Shared.Domain.Repositories;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using ProjectCalculadoraAMSAC.Shared.Domain.Repositories;
 using ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Configuration;
 
 namespace ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Repositories;
@@ -15,5 +16,9 @@ public class UnitOfWork : IUnitOfWork
     public async Task CompleteAsync()
     {
         await _context.SaveChangesAsync();
+    }
+    public async Task<IDbContextTransaction> BeginTransactionAsync()
+    {
+        return await _context.Database.BeginTransactionAsync();
     }
 }

@@ -26,6 +26,46 @@ public class EstimacionCommandService : IEstimacionCommandService
         _costoEstimadoRepository = costoEstimadoRepository;
         _unitOfWork = unitOfWork;
     }
+    
+    private async Task<string> GenerarNuevoCodPam()
+    {
+        int intento = 0;
+        while (intento < 5) // 🔹 Intenta hasta 5 veces en caso de colisión
+        {
+            using (var transaction = await _unitOfWork.BeginTransactionAsync())
+            {
+                try
+                {
+                    var ultimoCodPam = await _estimacionRepository.GetUltimoCodPamAsync();
+                    int nuevoNumero = 1;
+
+                    if (ultimoCodPam != null && int.TryParse(ultimoCodPam.Replace("SN-", ""), out int numero))
+                    {
+                        nuevoNumero = numero + 1;
+                    }
+
+                    string nuevoCodPam = $"SN-{nuevoNumero}";
+
+                    // 🔹 Verificar si ya existe antes de guardar
+                    bool exists = await _estimacionRepository.ExistsByCodPamAsync(nuevoCodPam);
+                    if (!exists)
+                    {
+                        await transaction.CommitAsync();
+                        return nuevoCodPam;
+                    }
+                }
+                catch (Exception)
+                {
+                    await transaction.RollbackAsync();
+                }
+
+                intento++;
+            }
+        }
+
+        throw new Exception("No se pudo generar un CodPam único después de varios intentos.");
+    }
+
 
   public async Task<int> Handle(CrearEstimacionCommand command)
 {
@@ -36,7 +76,12 @@ public class EstimacionCommandService : IEstimacionCommandService
 
     if (tipoPam == null)
         throw new InvalidOperationException($"No se encontró el TipoPam con ID {command.TipoPamId}.");
-
+    string codPam = command.CodPam;
+    if (string.IsNullOrWhiteSpace(codPam) || codPam == "0")
+    {
+        codPam = await GenerarNuevoCodPam();
+        Console.WriteLine($"DEBUG: CodPam generado -> {codPam}");
+    }
     if (tipoPam.Variables == null || !tipoPam.Variables.Any())
     {
         Console.WriteLine($"ERROR: TipoPam {command.TipoPamId} no tiene variables asignadas.");
@@ -47,8 +92,8 @@ public class EstimacionCommandService : IEstimacionCommandService
         command.UsuarioId,
         command.ProyectoId,
         tipoPam.Id,
-        command.CodPam,
-        command.Valores
+        codPam,
+    command.Valores
     );
 
     try

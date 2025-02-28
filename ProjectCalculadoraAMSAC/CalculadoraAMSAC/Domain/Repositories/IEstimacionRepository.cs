@@ -12,6 +12,8 @@ namespace ProjectCalculadoraAMSAC.CalculadoraAMSAC.Domain.Repositories;
         Task<List<Estimacion>> GetByProyectoIdAsync(int proyectoId);
         Task<List<Estimacion>> GetByTipoPamIdAsync(int tipoPamId);
         Task<List<Estimacion>> GetByProyectoIdAndTipoPamIdAsync(int? proyectoId, int? tipoPamId);
+        Task<string?> GetUltimoCodPamAsync();
+        Task<bool> ExistsByCodPamAsync(string codPam);
 
 
     }
