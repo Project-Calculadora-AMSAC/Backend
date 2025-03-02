@@ -72,5 +72,20 @@ public class EstimacionRepository : BaseRepository<Estimacion>, IEstimacionRepos
             .Include(e => e.Valores)
             .ToListAsync();
     }
+    
+    public async Task<string?> GetUltimoCodPamAsync()
+    {
+        return await _context.Estimaciones
+            .Where(e => e.CodPam.StartsWith("SN-"))
+            .OrderByDescending(e => e.CodPam)
+            .Select(e => e.CodPam)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<bool> ExistsByCodPamAsync(string codPam)
+    {
+        return await _context.Estimaciones.AnyAsync(e => e.CodPam == codPam);
+    }
+
 
 }
