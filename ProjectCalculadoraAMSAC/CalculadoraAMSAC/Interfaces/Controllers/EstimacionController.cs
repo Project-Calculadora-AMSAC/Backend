@@ -25,7 +25,6 @@ public class EstimacionController : ControllerBase
         _commandService = commandService;
     }
 
-    // ✅ Obtener todas las estimaciones con su costo asociado
     [HttpGet]
     public async Task<IActionResult> GetAllEstimaciones()
     {
@@ -61,7 +60,6 @@ public class EstimacionController : ControllerBase
         }));
     }
 
-    // ✅ Obtener una estimación por ID con su costo
     [HttpGet("{id}")]
     public async Task<IActionResult> GetEstimacionById(int id)
     {
@@ -105,7 +103,6 @@ public async Task<IActionResult> CreateEstimacion([FromBody] CrearEstimacionReso
     var command = CrearEstimacionTransform.ToCommand(resource);
     Console.WriteLine($"DEBUG: Enviando comando para crear estimación con TipoPamId {command.TipoPamId}");
 
-    // ✅ Ahora esperamos la confirmación del guardado antes de continuar
     var id = await _commandService.Handle(command);
 
     if (id == 0)
@@ -146,7 +143,6 @@ public async Task<IActionResult> CreateEstimacion([FromBody] CrearEstimacionReso
 
 
 
-    // ✅ Actualizar una estimación existente
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateEstimacion(int id, [FromBody] ActualizarEstimacionCommand command)
     {
@@ -158,7 +154,6 @@ public async Task<IActionResult> CreateEstimacion([FromBody] CrearEstimacionReso
         return NoContent();
     }
 
-    // ✅ Obtener el costo total de todas las estimaciones de un proyecto
     [HttpGet("totalCost/{proyectoId}")]
     public async Task<IActionResult> GetTotalCost(int proyectoId)
     {

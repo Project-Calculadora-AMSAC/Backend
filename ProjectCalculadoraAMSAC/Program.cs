@@ -29,7 +29,6 @@ using ProjectCalculadoraAMSAC.User.Interfaces.ACL.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 
-// Configurar autenticación JWT
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = "Bearer";
@@ -53,7 +52,6 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
-// Configurar DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
@@ -77,12 +75,14 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(corsPolicyBuilder =>
     {
-        corsPolicyBuilder.WithOrigins("http://localhost:8081","http://localhost:8080") 
+        corsPolicyBuilder.WithOrigins("http://localhost", "http://epam.amsac.pe","http://198.150.0.223","https://localhost", "https://epam.amsac.pe","https://198.150.0.223")  
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials();
+            .AllowCredentials();  
     });
 });
+
+
 
 builder.Services.AddEndpointsApiExplorer();
 

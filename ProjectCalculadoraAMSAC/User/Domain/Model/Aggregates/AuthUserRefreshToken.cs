@@ -3,10 +3,10 @@
 public class AuthUserRefreshToken
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid UserId { get; set; } // Relación con el usuario
+    public Guid UserId { get; set; } 
     public string Token { get; set; } = string.Empty;
-    public DateTime ExpiryDate { get; set; } // Expira en X días
-    public bool IsRevoked { get; set; } = false; // Para invalidar tokens
-    public AuthUser AuthUser { get; set; } // Relación con AuthUser
+    public DateTime ExpiryDate { get; set; } 
+    public bool IsRevoked { get; set; } = false; 
+    public AuthUser AuthUser { get; set; } 
 
 }

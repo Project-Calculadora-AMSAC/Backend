@@ -15,9 +15,9 @@ public class AuthUser(string email, string passwordHash,string registerArea,Date
     
     [JsonIgnore] public string PasswordHash { get; private set; } = passwordHash;
 
-    public string RegisterArea { get; set; } = registerArea; // Nombre completo, ra
+    public string RegisterArea { get; set; } = registerArea; 
     
-    public DateTime RegisteredAt { get; set; } = registeredAt; // Fecha de registro
+    public DateTime RegisteredAt { get; set; } = registeredAt;
     public List<AuthUserRefreshToken> RefreshTokens { get; set; } = new();
     
     public AuthUser updateEmail(string email)

@@ -34,7 +34,7 @@ public class AtributoPamRepository : BaseRepository<AtributosPam>, IAtributoPamR
     public async Task<List<AtributosPam>> GetAllByTipoPamAsync(int tipoPamId)
     {
         return await _context.AtributoPam
-            .Where(a => a.TipoPamId == tipoPamId) // Filtrar por TipoPamId
+            .Where(a => a.TipoPamId == tipoPamId) 
             .Include(a => a.TipoPam)
             .Include(a => a.UnidadDeMedida)
             .ToListAsync();

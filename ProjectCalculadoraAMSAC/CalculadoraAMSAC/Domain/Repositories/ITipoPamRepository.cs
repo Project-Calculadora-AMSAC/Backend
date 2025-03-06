@@ -7,5 +7,5 @@ public interface ITipoPamRepository : IBaseRepository<TipoPam>
 {
     Task<TipoPam?> GetByIdAsync(int id);
     Task<List<TipoPam>> GetAllAsync();
-    Task<TipoPam?> GetByIdWithVariablesAsync(int id); // ✅ Nuevo método
+    Task<TipoPam?> GetByIdWithVariablesAsync(int id); 
 }

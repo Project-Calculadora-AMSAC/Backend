@@ -14,7 +14,7 @@ public class ValorAtributoEstimacion
     public int AtributoPamId { get;  set; }
     public AtributosPam AtributoPam { get;  set; }
 
-    public string Valor { get;  set; } // Se almacena como string y se convierte según `AtributoPam.TipoDato`
+    public string Valor { get;  set; } 
 
     private ValorAtributoEstimacion() { }
 

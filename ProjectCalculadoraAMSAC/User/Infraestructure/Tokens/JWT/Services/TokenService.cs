@@ -17,7 +17,7 @@ namespace ProjectCalculadoraAMSAC.User.Infraestructure.Tokens.JWT.Services
     {
         private readonly TokenSettings _tokenSettings;
         private readonly IAuthUserRefreshTokenRepository _refreshTokenRepository;
-        private readonly AppDbContext _context; // 🔹 Agregamos el contexto de BD
+        private readonly AppDbContext _context; 
 
         public TokenService(
             IOptions<TokenSettings> tokenSettings,
@@ -38,7 +38,7 @@ namespace ProjectCalculadoraAMSAC.User.Infraestructure.Tokens.JWT.Services
             var secret = _tokenSettings.Secret;
             var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret));
 
-            var refreshToken = GenerateRefreshToken(); // Generamos el refresh token aquí mismo
+            var refreshToken = GenerateRefreshToken(); 
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -46,16 +46,15 @@ namespace ProjectCalculadoraAMSAC.User.Infraestructure.Tokens.JWT.Services
                 {
                     new Claim(ClaimTypes.Sid, user.Id.ToString()),
                     new Claim(ClaimTypes.Name, user.Email),
-                    new Claim("refreshToken", refreshToken) // Guardamos el refresh token en el JWT
+                    new Claim("refreshToken", refreshToken) 
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(30), // Expira en 1 minuto
+                Expires = DateTime.UtcNow.AddMinutes(30), 
                 SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
     
-            // Guardamos el refresh token en la base de datos
             StoreRefreshToken(user.Id, refreshToken).Wait();
 
             return tokenHandler.WriteToken(token);
@@ -94,7 +93,7 @@ namespace ProjectCalculadoraAMSAC.User.Infraestructure.Tokens.JWT.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error en la validación del token: {ex.Message}");
+                Console.WriteLine($"Error en la validación del token: {ex.Message}");
                 return null;
             }
         }
@@ -123,23 +122,23 @@ namespace ProjectCalculadoraAMSAC.User.Infraestructure.Tokens.JWT.Services
 
             if (storedToken == null)
             {
-                Console.WriteLine($"⚠️ No se encontró un refresh token para el usuario {userId}.");
+                Console.WriteLine($" No se encontró un refresh token para el usuario {userId}.");
                 return null;
             }
 
             if (storedToken.Token != refreshToken)
             {
-                Console.WriteLine($"🚨 Refresh token inválido para el usuario {userId}.");
+                Console.WriteLine($" Refresh token inválido para el usuario {userId}.");
                 return null;
             }
 
             if (storedToken.ExpiryDate < DateTime.UtcNow)
             {
-                Console.WriteLine($"⏳ El refresh token del usuario {userId} ha expirado.");
+                Console.WriteLine($" El refresh token del usuario {userId} ha expirado.");
                 return null;
             }
 
-            Console.WriteLine($"✅ Refresh token válido para el usuario {userId}.");
+            Console.WriteLine($" Refresh token válido para el usuario {userId}.");
             return storedToken.UserId;
         }
 

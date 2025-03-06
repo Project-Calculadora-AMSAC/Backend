@@ -18,14 +18,14 @@ public class ProyectoRepository : BaseRepository<Proyecto>, IProyectoRepository
         public async Task<Proyecto> GetByIdAsync(int id)
         {
             return await _context.Proyecto
-                .Include(p => p.Estimaciones) // Incluye las estimaciones relacionadas
+                .Include(p => p.Estimaciones) 
                 .FirstOrDefaultAsync(p => p.ProyectoId == id);
         }
 
         public async Task<List<Proyecto>> GetAllAsync()
         {
             return await _context.Proyecto
-                .Include(p => p.Estimaciones) // Incluye las estimaciones relacionadas
+                .Include(p => p.Estimaciones) 
                 .ToListAsync();
         }
     }

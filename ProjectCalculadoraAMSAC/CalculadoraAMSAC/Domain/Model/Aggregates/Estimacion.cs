@@ -13,7 +13,7 @@ public class Estimacion
     public int TipoPamId { get; private set; }
     public TipoPam TipoPam { get; private set; }
 
-    public string CodPam { get; private set; } // Código único por estimación
+    public string CodPam { get; private set; } 
     public DateTime FechaEstimacion { get; private set; }
 
     private readonly List<ValorAtributoEstimacion> _valores  = new(); 

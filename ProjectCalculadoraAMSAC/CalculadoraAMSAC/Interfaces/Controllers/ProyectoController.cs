@@ -39,10 +39,8 @@ public class ProyectoController(IProyectoQueryService queryService, IProyectoCom
     {
         if (command == null) return BadRequest("Invalid input.");
 
-        // ✅ Crear el proyecto en la base de datos
         var id = await commandService.Handle(command);
 
-        // ✅ Obtener el proyecto recién creado
         var proyecto = await queryService.Handle(new GetProyectoByIdQuery(id));
         if (proyecto == null) return NotFound("Project not found.");
 

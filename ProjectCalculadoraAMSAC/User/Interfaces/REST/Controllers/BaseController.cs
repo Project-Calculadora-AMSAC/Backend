@@ -14,7 +14,7 @@ public abstract class BaseController : ControllerBase
     protected Guid GetAuthenticatedUserId()
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) 
-                          ?? User.FindFirst(ClaimTypes.Sid) // Usar SID si NameIdentifier no está
+                          ?? User.FindFirst(ClaimTypes.Sid) 
                           ?? throw new UnauthorizedAccessException("Token inválido o expirado.");
 
         return Guid.Parse(userIdClaim.Value);

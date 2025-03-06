@@ -30,7 +30,7 @@ public class AuthUserRepository : BaseRepository<AuthUser>, IAuthUserRepository
     public async Task<AuthUser?> FindByRefreshTokenAsync(string refreshToken)
     {
         return await _context.AuthUsers
-            .Include(u => u.RefreshTokens) // Asegura que incluyes la relación con los tokens
+            .Include(u => u.RefreshTokens) 
             .FirstOrDefaultAsync(u => u.RefreshTokens.Any(rt => rt.Token == refreshToken && rt.ExpiryDate > DateTime.UtcNow));
     }
     /// <summary>
@@ -41,7 +41,7 @@ public class AuthUserRepository : BaseRepository<AuthUser>, IAuthUserRepository
     public async Task<AuthUser?> FindByIdAsync(Guid authUserId)
     {
         return await _context.AuthUsers
-            .FirstOrDefaultAsync(u => u.Id == authUserId); // Filtra por Id
+            .FirstOrDefaultAsync(u => u.Id == authUserId); 
     }
     /// <summary>
     /// Verifica si un usuario existe por su correo electrónico
