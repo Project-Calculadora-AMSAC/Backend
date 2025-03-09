@@ -26,6 +26,7 @@ public class EstimacionQueryService(IEstimacionRepository estimacionRepository) 
             .GetQueryable()
             .Include(e => e.CostoEstimado)         
             .Include(e => e.Proyecto)            
+            .Include(e => e.TipoPam)
             .Include(e => e.Valores)              
             .ToListAsync();
     }

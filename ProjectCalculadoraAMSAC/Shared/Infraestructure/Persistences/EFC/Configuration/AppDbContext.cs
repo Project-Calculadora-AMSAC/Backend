@@ -71,6 +71,8 @@ namespace ProjectCalculadoraAMSAC.Shared.Infraestructure.Persistences.EFC.Config
                 proyecto.HasKey(p => p.ProyectoId);
                 proyecto.Property(p => p.ProyectoId).ValueGeneratedOnAdd();
                 proyecto.Property(p => p.Name).IsRequired().HasMaxLength(255);
+                proyecto.HasIndex(p => p.Name)
+                    .IsUnique();
                 proyecto.Property(p => p.Descripcion).HasMaxLength(500);
                 proyecto.HasMany(p => p.Estimaciones)
                     .WithOne(e => e.Proyecto)

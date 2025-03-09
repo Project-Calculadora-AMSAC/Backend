@@ -57,4 +57,14 @@ public class ProyectoController(IProyectoQueryService queryService, IProyectoCom
 
         return NoContent();
     }
+
+    [HttpPut("deleteProyecto/{id}")]
+    public async Task<IActionResult> DeleteProyecto([FromRoute] int id)
+    {
+        var deleteProyectCommand = new ActualizarEstadoProyectoCommand(id);
+        var proyecto = await commandService.Handle(deleteProyectCommand);
+        if (proyecto is null) return NotFound("Project not found.");
+        return NoContent();
+
+    }
 }
